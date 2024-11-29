@@ -28,11 +28,11 @@ let dataObj = {
         allowNull: false,
     },
     coin_family: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.TINYINT,
         allowNull: false,
     },
     status: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.TINYINT,
         allowNull: true,
     }
 };

@@ -50,6 +50,14 @@ let dataObjIndex = {
       unique: false,
       fields: ["status"],
     },
+    {
+      unique: false,
+      fields: ["address"],
+    },
+    {
+      unique: false,
+      fields: ["coin_family"],
+    },
   ],
 };
 

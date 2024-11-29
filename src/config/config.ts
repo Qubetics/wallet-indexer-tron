@@ -76,8 +76,8 @@ export const config = {
    LAST_BLOCK_FILE_PATH: __dirname + "/lastBlock.txt",
    READ_BEHINED_BLOCK_TRON: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.READ_BEHINED_BLOCK_TRON}`,
    BLOCKS: zookeeperConfig.config.BLOCKS,
-   USER_ALL_COINS_BALANCE_UPDATE: zookeeperConfig.config.USER_ALL_COINS_BALANCE_UPDATE,
-   TRON_UPDATE_BALANCE_OF_COIN: zookeeperConfig.config.TRON_UPDATE_BALANCE_OF_COIN,
+   // USER_ALL_COINS_BALANCE_UPDATE: zookeeperConfig.config.USER_ALL_COINS_BALANCE_UPDATE,
+   // TRON_UPDATE_BALANCE_OF_COIN: zookeeperConfig.config.TRON_UPDATE_BALANCE_OF_COIN,
 
    CONTRACT_ABI: [
       {
