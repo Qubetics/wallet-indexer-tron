@@ -1,23 +1,28 @@
 import BigNumber from "bignumber.js";
-var FCM = require("fcm-node");
+// var FCM = require("fcm-node");
 import { device_token_queries } from "./index";
-import { config } from "../config/config";
+// import { config } from "../config/config";
 import * as Models from "../models/model/index";
-import { fcmServiceAccount } from "../constant/firebase.admin.key";
+// import { fcmServiceAccount } from "../constant/firebase.admin.key";
 import { Op } from "sequelize";
-const firebaseAdmin = require("firebase-admin");
+// const firebaseAdmin = require("firebase-admin");
+import firebaseAdmin from 'firebase-admin';
+import { fcmServiceAccount } from "../constant/firebase.admin.key";
 
-console.log("fcm::", fcmServiceAccount);
+// console.log("fcm::", fcmServiceAccount);
 
 class UtilityHelper {
+  public messaging: firebaseAdmin.messaging.Messaging;
   constructor() {
+    // const fcmServiceAccoun=fcmServiceAccount;
     (async () => {
-      await firebaseAdmin.initializeApp({
+      firebaseAdmin.initializeApp({
         credential: firebaseAdmin.credential.cert(fcmServiceAccount),
       });
+      this.messaging = firebaseAdmin.messaging();
     })();
   }
-  public FCM_SERVER_KEY: any = config.KEYS.FCM_PUSH;
+  // public FCM_SERVER_KEY: any = config.KEYS.FCM_PUSH;
   public async bigNumberSafeMath(c: any, operation: any, d: any) {
     18;
     var a = new BigNumber(c);
@@ -210,18 +215,18 @@ class UtilityHelper {
         await device_token_queries.device_tokens_with_limit(
           ["device_token"],
           {
-            user_id: toUserId,
+            // user_id: toUserId,
             address: {
               [Op.like]: data.wallet_address,
             },
             coin_family: data.coin_family,
             push: 1
-          },
-          [
-            ["updated_at", "DESC"],
-            ["id", "DESC"],
-          ],
-          3
+          }
+          // [
+          //   ["updated_at", "DESC"],
+          //   ["id", "DESC"],
+          // ],
+          // 3
         );
       let finalDeviceTokens: any = [];
 
@@ -236,25 +241,25 @@ class UtilityHelper {
           data.announcement_message == undefined
             ? ""
             : data.announcement_message;
-        const messaging = firebaseAdmin.messaging();
+        // const messaging = firebaseAdmin.messaging();
         const notification = {
           title: data.title,
           body: data.message,
         };
 
-        messaging
-          .sendMulticast({
+        this.messaging
+          .sendEachForMulticast({
             tokens: finalDeviceTokens,
-            collapse_key: "type_a",
+            // collapse_key: "type_a",
             notification: notification,
             data: {
               body: data.message ? data.message : "",
               title: data.title ? data.title : "",
               notification_type: data.notification_type ? data.notification_type : "",
-              tx_id: data.tx_id ? data.tx_id : 0,
+              tx_id: data.tx_id ? data.tx_id.toString() : "0",
               tx_type: data.tx_type ? data.tx_type : "",
-              from_user_id: data.from_user_id ? data.from_user_id : 0,
-              user_coin_id: data.coin_id ? data.coin_id : 0,
+              from_user_id: data.from_user_id ? data.from_user_id.toString() : "0",
+              user_coin_id: data.coin_id ? data.coin_id.toString() : "0",
               announcement_title: announcement_title,
               announcement_message: announcement_message,
             }
@@ -290,10 +295,10 @@ class UtilityHelper {
       /* save notification */
       const checkOldNotif: any = await Models.NotificationModel.count({
         where: {
-          to_user_id: toUserId,
+          wallet_address: { [Op.like]: data.wallet_address },
           notification_type: data.notification_type,
           tx_id: data.tx_id,
-          tx_type: data.tx_type,
+          // tx_type: data.tx_type,
         },
       });
       if (checkOldNotif == 0) {
