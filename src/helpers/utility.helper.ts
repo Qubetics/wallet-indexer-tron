@@ -221,11 +221,11 @@ class UtilityHelper {
             },
             coin_family: data.coin_family,
             push: 1
-          }
-          // [
-          //   ["updated_at", "DESC"],
-          //   ["id", "DESC"],
-          // ],
+          },
+          [
+            ["updated_at", "DESC"],
+            ["id", "DESC"],
+          ],
           // 3
         );
       let finalDeviceTokens: any = [];
@@ -265,7 +265,7 @@ class UtilityHelper {
             }
           })
           .then((response: any) => {
-            console.log("💥🚀 ~ firebase admin push notification", response);
+            console.log("💥🚀 ~ firebase admin push notification", JSON.stringify(response));
           })
           .catch((error: any) => {
             console.error(
