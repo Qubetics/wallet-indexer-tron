@@ -387,11 +387,11 @@ class TronTxStatusUpdateProcess {
 
           let bal_data: any = await global_helper.Fetch_Balance(coin_data, data.wallet_address)
           if (bal_data.status) {
-            console.log("entered in coin_data coin_id>>>>>", data.coin_id, "wallet_address>>>", data.wallet_address, "balance>>>", bal_data.balance)
+            console.log("entered in coin_data coin_id>>>>>", coin_data.coin_id, "wallet_address>>>", data.wallet_address, "balance>>>", bal_data.balance)
 
             await wallet_queries.wallet_update(
               { balance: bal_data.balance, status: 1 },
-              { coin_id: data.coin_id, wallet_address: data.wallet_address }
+              { coin_id: coin_data.coin_id, wallet_address: data.wallet_address }
             )
             console.log("updated succssffullylyyyy")
           } else {
