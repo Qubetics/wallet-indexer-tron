@@ -38,7 +38,7 @@ class TRONStartProcess {
       })
    }
    public readSpecificBlock() {
-      schedule.scheduleJob("*/15 * * * *", async function () {
+      schedule.scheduleJob("*/2 * * * *", async function () {
          await TronProcessBlocks.readSpecificBlock();
       })
    }
