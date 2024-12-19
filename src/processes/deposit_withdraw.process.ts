@@ -168,22 +168,22 @@ class TronDepositWithdrawProcess {
       if (Addressdeposit) {
 
         let trnxTypeD: string = "Deposit";
-        switch (tx_type) {
-          case TrnxTypeEnum.SMARTCONTRACTINTERACTION:
-            trnxTypeD = "Smart Contract Interaction";
-            break;
-          case TrnxTypeEnum.APPROVE:
-            trnxTypeD = "Approval";
-            break;
-          case TrnxTypeEnum.SWAP:
-            trnxTypeD = "Swap";
-            break;
-          case TrnxTypeEnum.CROSS_CHAIN:
-            trnxTypeD = "Cross-chain Swap";
-            break;
-          default:
-            break;
-        }
+        // switch (tx_type) {
+        //   case TrnxTypeEnum.SMARTCONTRACTINTERACTION:
+        //     trnxTypeD = "Smart Contract Interaction";
+        //     break;
+        //   case TrnxTypeEnum.APPROVE:
+        //     trnxTypeD = "Approval";
+        //     break;
+        //   case TrnxTypeEnum.SWAP:
+        //     trnxTypeD = "Swap";
+        //     break;
+        //   case TrnxTypeEnum.CROSS_CHAIN:
+        //     trnxTypeD = "Cross-chain Swap";
+        //     break;
+        //   default:
+        //     break;
+        // }
 
         /** update to adrs wallet balance */
         //============================================================================
@@ -198,15 +198,12 @@ class TronDepositWithdrawProcess {
         await tronProcessHelper.adding_coins_to_queue(to_address, coin)
         //============================================================================
 
-
-
-
         const notiMsg = `${trnxTypeD} of ${await Utility_Helper.bigNumberSafeConversion(
           amount
         )} ${coin.coin_symbol.toUpperCase()} has been confirmed.`;
 
         let notifData: any = {
-          title: NotificationTypeEnum.DEPOSIT.toUpperCase(),
+          title: trnxTypeD.toUpperCase(),
           message: notiMsg,
           amount: amount,
           from_user_id: user_id,
@@ -217,7 +214,7 @@ class TronDepositWithdrawProcess {
           coin_family: coin.coin_family,
           coin_id: coin.coin_id,
           tx_type: tx_type,
-          notification_type: NotificationTypeEnum.DEPOSIT,
+          notification_type: trnxTypeD,
           state: "confirmed"
         };
         Utility_Helper.SendNotification(notifData);
@@ -225,7 +222,6 @@ class TronDepositWithdrawProcess {
 
       if (AddressWithdraw) {
         let trnxTypeW: string = "Withdraw";
-
         switch (tx_type) {
           case TrnxTypeEnum.SMARTCONTRACTINTERACTION:
             trnxTypeW = "Smart Contract Interaction";
@@ -237,7 +233,7 @@ class TronDepositWithdrawProcess {
             trnxTypeW = "Swap";
             break;
           case TrnxTypeEnum.CROSS_CHAIN:
-            trnxTypeW = "Cross-chain Swap";
+            trnxTypeW = "Cross chain Swap";
             break;
           default:
             break;
@@ -252,16 +248,9 @@ class TronDepositWithdrawProcess {
         await tronProcessHelper.adding_coins_to_queue(from_address, coin)
 
         if (coin.is_token) {
-          const native_coin: any =
-            await ethProcessHelper.NativeCoinByCoinFamily(coin.coin_family);
-          //   await Wallet_Helper.Update_Balance(
-          //     from_address, /// wallet_address,
-          //     native_coin /// coin
-          //   );
+          const native_coin: any = await ethProcessHelper.NativeCoinByCoinFamily(coin.coin_family);
           console.log("789 adding_coins_to_queue ")
-
           await tronProcessHelper.adding_coins_to_queue(from_address, native_coin)
-
         }
         //============================================================================
 
@@ -270,7 +259,7 @@ class TronDepositWithdrawProcess {
         )} ${coin.coin_symbol.toUpperCase()} has been confirmed.`;
 
         let notifData: any = {
-          title: NotificationTypeEnum.WITHDRAW.toUpperCase(),
+          title: trnxTypeW?.toUpperCase(),
           message: notiMsg,
           amount: amount,
           from_user_id: 0,
@@ -281,7 +270,7 @@ class TronDepositWithdrawProcess {
           coin_symbol: coin.coin_symbol,
           coin_family: coin.coin_family,
           coin_id: coin.coin_id,
-          notification_type: NotificationTypeEnum.WITHDRAW,
+          notification_type: trnxTypeW,
           state: "confirmed"
         };
 

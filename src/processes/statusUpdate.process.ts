@@ -215,7 +215,6 @@ class TronTxStatusUpdateProcess {
             } else {
               // await Wallet_Helper.Update_all_active_coin_balance(from_address);
               await tronProcessHelper.adding_address_to_queue(from_address, coin_family)
-
             }
             //============================================================================================
 
@@ -231,7 +230,7 @@ class TronTxStatusUpdateProcess {
                 trnxTypeW = "Swap";
                 break;
               case TrnxTypeEnum.CROSS_CHAIN:
-                trnxTypeW = "Cross-chain Swap";
+                trnxTypeW = "Cross chain Swap";
                 break;
               default:
                 break;
@@ -241,7 +240,7 @@ class TronTxStatusUpdateProcess {
             )} ${coin_symbol.toUpperCase()} has been confirmed.`;
 
             let notifData: any = {
-              title: NotificationTypeEnum.WITHDRAW.toUpperCase(),
+              title: trnxTypeW.toUpperCase(),
               message: notiMsg,
               from_user_id: 0,
               amount: amount,
@@ -252,7 +251,7 @@ class TronTxStatusUpdateProcess {
               coin_id: trx_data?.coin?.coin_id,
               coin_family: trx_data?.coin.coin_family,
               tx_type: tx_type,
-              notification_type: NotificationTypeEnum.WITHDRAW,
+              notification_type: trnxTypeW,
               state: TrnxBlockchainStatus.CONFIRMED
             };
 
@@ -263,49 +262,47 @@ class TronTxStatusUpdateProcess {
           if (Addressdeposit) {
             let to_user_id: number = Addressdeposit ? Addressdeposit.user_id : 0;
             let trnxTypeD: string = "Deposit";
-            switch (tx_type) {
-              case TrnxTypeEnum.DAPP:
-                trnxTypeD = "Smart Contract Execution";
-                break;
-              case TrnxTypeEnum.APPROVE:
-                trnxTypeD = "Approval";
-                break;
-              case TrnxTypeEnum.SWAP:
-                trnxTypeD = "Swap";
-                break;
-              case TrnxTypeEnum.CROSS_CHAIN:
-                trnxTypeD = "Cross-chain Swap";
-                break;
-              default:
-                break;
-            }
+            // switch (tx_type) {
+            //   case TrnxTypeEnum.DAPP:
+            //     trnxTypeD = "Smart Contract Execution";
+            //     break;
+            //   case TrnxTypeEnum.APPROVE:
+            //     trnxTypeD = "Approval";
+            //     break;
+            //   case TrnxTypeEnum.SWAP:
+            //     trnxTypeD = "Swap";
+            //     break;
+            //   case TrnxTypeEnum.CROSS_CHAIN:
+            //     trnxTypeD = "Cross chain Swap";
+            //     break;
+            //   default:
+            //     break;
+            // }
             if (to_address !== from_address) {
-              if (tx_type !== TrnxTypeEnum.DAPP) {
-                //============================================================================================
-                // let balance: any = await Wallet_Helper.Update_Balance(
-                //   to_address,
-                //   trx_data?.coin
-                // );
-                // await global_helper.check_coin_in_wallet(to_address, trx_data?.coin, balance)
-                //
-                console.log("ENtering adding_coins_to_queue ")
-                await tronProcessHelper.adding_coins_to_queue(to_address, trx_data.coin)
-
-              } else {
-                // await Wallet_Helper.Update_all_active_coin_balance(to_address);
-                console.log("ENtering adding_address_to_queue ")
-
-                await tronProcessHelper.adding_address_to_queue(to_address, coin_family)
-              }
+              // if (tx_type !== TrnxTypeEnum.DAPP) {
               //============================================================================================
+              // let balance: any = await Wallet_Helper.Update_Balance(
+              //   to_address,
+              //   trx_data?.coin
+              // );
+              // await global_helper.check_coin_in_wallet(to_address, trx_data?.coin, balance)
+              //
+              console.log("ENtering adding_coins_to_queue ")
+              await tronProcessHelper.adding_coins_to_queue(to_address, trx_data.coin)
+              // } else {
+              //   // await Wallet_Helper.Update_all_active_coin_balance(to_address);
+              //   console.log("ENtering adding_address_to_queue ")
 
+              //   await tronProcessHelper.adding_address_to_queue(to_address, coin_family)
+              // }
             }
+
             const notiMsg = `${trnxTypeD} of ${await Utility_Helper.bigNumberSafeConversion(
               amount
             )} ${trx_data?.coin?.coin_symbol.toUpperCase()} has been confirmed.`;
 
             let notifData: any = {
-              title: NotificationTypeEnum.DEPOSIT.toUpperCase(),
+              title: trnxTypeD.toUpperCase(),
               message: notiMsg,
               amount: amount,
               from_user_id: user_id,
@@ -316,16 +313,35 @@ class TronTxStatusUpdateProcess {
               coin_id: trx_data?.coin?.coin_id,
               coin_family: trx_data?.coin.coin_family,
               tx_type: tx_type,
-              notification_type: NotificationTypeEnum.DEPOSIT,
+              notification_type: trnxTypeD,
               state: TrnxBlockchainStatus.CONFIRMED
             };
             Utility_Helper.SendNotification(notifData);
           }
           return true;
         } else if (blockchain_status == TrnxBlockchainStatus.FAILED) {
-          let notiMsg = trx_data?.coin.token_type === "TRC10" ? `Withdraw of NFT(${trx_data?.coin.coin_symbol.toUpperCase()}) with token id ${amount} has been confirmed.` : `Withdraw request of ${await Utility_Helper.bigNumberSafeConversion(amount)} ${trx_data?.coin.coin_symbol.toUpperCase()} has been failed.`;
+          let trnxTypeW: string = "Withdraw";
+          switch (tx_type) {
+            case TrnxTypeEnum.DAPP:
+              trnxTypeW = "Smart Contract Execution";
+              break;
+            case TrnxTypeEnum.APPROVE:
+              trnxTypeW = "Approval";
+              break;
+            case TrnxTypeEnum.SWAP:
+              trnxTypeW = "Swap";
+              break;
+            case TrnxTypeEnum.CROSS_CHAIN:
+              trnxTypeW = "Cross chain Swap";
+              break;
+            default:
+              break;
+          }
+
+          let notiMsg = trx_data?.coin.token_type === "TRC10" ? `Withdraw of NFT(${trx_data?.coin.coin_symbol.toUpperCase()}) with token id ${amount} has been confirmed.` : `${trnxTypeW} request of ${await Utility_Helper.bigNumberSafeConversion(amount)} ${trx_data?.coin.coin_symbol.toUpperCase()} has been failed.`;
+
           let notifData: any = {
-            title: NotificationTypeEnum.WITHDRAW.toUpperCase(),
+            title: trnxTypeW.toUpperCase(),
             message: notiMsg,
             amount: amount,
             from_user_id: 0,
@@ -336,7 +352,7 @@ class TronTxStatusUpdateProcess {
             coin_id: trx_data?.coin?.coin_id,
             coin_family: trx_data?.coin.coin_family,
             tx_type: tx_type,
-            notification_type: NotificationTypeEnum.WITHDRAW,
+            notification_type: trnxTypeW,
             state: TrnxBlockchainStatus.FAILED
           };
           Utility_Helper.SendNotification(notifData);
