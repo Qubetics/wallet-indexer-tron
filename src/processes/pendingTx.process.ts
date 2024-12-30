@@ -14,7 +14,7 @@ class ETHPendingWithdrawalProcess {
       {
         status: 'completed',
         [Op.or]: [{ blockchain_status: null }, { blockchain_status: TrnxBlockchainStatus.PENDING }],
-        req_type: { [Op.notIn]: ['TRANSAK', 'ALCHEMY'] },
+        req_type: { [Op.notIn]: ['TRANSAK', 'ALCHEMY', 'MERCURYO'] },
         coin_family: config.STATIC_COIN_FAMILY.TRX,
         tx_id: { [Op.not]: null }
       },
