@@ -147,7 +147,8 @@ class TronTxStatusUpdateProcess {
           coin_symbol: coin_data.coin_symbol,
           coin_family: coin_data.coin_family,
           token_type: coin_data.token_type,
-          token_address: Number(coin_data.is_token) === Number(BooleanEnum.true) ? coin_data.token_address : coin_data.coin_symbol
+          token_address: Number(coin_data.is_token) === Number(BooleanEnum.true) ? coin_data.token_address : coin_data.coin_symbol,
+          added_by: coin_data.added_by
         }
       };
       await this.updateBroadcastTx(trx_data);

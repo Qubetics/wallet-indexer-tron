@@ -6,6 +6,7 @@ import { config } from "../config/config";
 import database from "../connections/db.conn";
 import { BooleanEnum, CoinFamily } from "../enum";
 import { Blockchain_Helper, coin_queries, global_helper, kafkaHelper, node_issue_error_log_queries, wallet_queries } from '../helpers';
+import CustomTokennModel from "../models/model/model.custom_tokens";
 
 class TronProcessHelper {
   public CoinsInterface: any;
@@ -250,11 +251,11 @@ class TronProcessHelper {
       )
 
       if (!wallet_data) {
-        let wallet_data: any = await tronProcessHelper.check_our_wallet_address(wallet_address)
+        wallet_data = await tronProcessHelper.check_our_wallet_address(wallet_address)
         if (wallet_data) {
           let data_obj: any = {
             user_id: wallet_data.user_id,
-            email: wallet_data.email,
+            // email: wallet_data.email,
             wallet_name: wallet_data.wallet_name,
             wallet_address: wallet_address,
             coin_id: coin_details.coin_id,
@@ -268,6 +269,37 @@ class TronProcessHelper {
           console.log("Not our wallet address", wallet_address)
         }
       }
+      
+      if (coin_details.added_by) {
+        console.log("coin.added_by exist", coin_details.added_by)
+        if (coin_details.added_by == 'user') {
+          console.log("added by user")
+          let user_exist: any = await CustomTokennModel.findOne({
+            attributes: ["id"],
+            where: { user_id: wallet_data.user_id, coin_id: coin_details.coin_id },
+            raw: true
+          })
+          if (user_exist) {
+            console.log("custom token already exist")
+          } else {
+            console.log("custom token not exist")
+            let currentUTCDate: string = new Date()
+              .toISOString()
+              .replace(/T/, " ")
+              .replace(/\..+/, "");
+            await CustomTokennModel.create({
+              coin_id: coin_details.coin_id,
+              user_id: wallet_data.user_id,
+              created_at: currentUTCDate,
+              updated_at: currentUTCDate
+            })
+          }
+
+        }
+      } else {
+        console.log("coin.added_by does not exist")
+      }
+
       console.log("Under adding_coins_to_queue>>>wallet_address>>", wallet_address, "coin_id>>>", coin_details.coin_id)
       if (wallet_address && coin_details.coin_id) {
         await kafkaHelper.produceMessage(this.trx_pending_balance_update_topic, { wallet_address: wallet_address, coin_data: coin_details, retry_count: 0 })

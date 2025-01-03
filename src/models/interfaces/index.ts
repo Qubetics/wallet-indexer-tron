@@ -7,3 +7,4 @@ export { TronOldBlockInterface } from './interface.tron_old_block';
 export { SettingsInterface } from './interface.settings';
 export { CatchErrorMsgsInterface } from './interface.catch_error_logs';
 export { NodeIssueErrorLogsInterface } from './interface.node_issue_error_logs';
+export { CustomTokenInterface } from './interface.custom_tokens';

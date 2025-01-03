@@ -18,10 +18,10 @@ let dataObj = {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
+  // email: {
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  // },
   login_type: {
     type: DataTypes.STRING,
     allowNull: true
