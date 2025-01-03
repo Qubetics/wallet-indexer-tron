@@ -1,8 +1,8 @@
 // import { RabbitMq } from "../helpers/rabbitmq.helper";
 import { config } from "../config/config";
 import ethProcessHelper from './processes.helper';
-import { BooleanEnum, CoinFamily, NotificationTypeEnum, TrnxTypeEnum, TxReqTypesEnum } from ".././enum";
-import { Utility_Helper, Wallet_Helper, kafkaHelper, trnx_history_queries, wallet_queries } from "../helpers"
+import { BooleanEnum, CoinFamily, TrnxTypeEnum, TxReqTypesEnum } from ".././enum";
+import { Utility_Helper, kafkaHelper, trnx_history_queries, wallet_queries } from "../helpers"
 import { Op } from "sequelize";
 import tronProcessHelper from "./processes.helper";
 import { TrnxBlockchainStatus } from "../enum";

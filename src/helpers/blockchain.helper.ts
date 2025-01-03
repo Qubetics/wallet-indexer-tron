@@ -1,42 +1,25 @@
 import TronWeb from 'tronweb';
-import Web3 from "web3"
-import { BooleanEnum, TokenStandard } from "../enum";
+import { TokenStandard } from "../enum";
 import { Utility_Helper } from "./utility.helper";
 import { config } from '../config/config';
-import { AbiItem } from 'web3-utils';
 import tronProcessHelper from '../processes/processes.helper';
 import node_issue_error_log_queries from './dbhelper/node_issue_error_logs';
 class BlockchainHelper {
-   public MATIC_Web3: Web3;
-   public ETH_Web3: Web3;
-   public BSC_Web3: Web3;
+
    public tron_coin_family: any = config.STATIC_COIN_FAMILY.TRX;
-
-
-   public ETH_FULLNODE: string = config.NODE.ETH_RPC_URL;
    public TRX_FULLNODE: string = config.NODE.TRX_RPC_URL;
-   public BSC_FULLNODE: string = config.NODE.BNB_RPC_URL;
-
    public tronWeb: any;
-
-
    constructor() {
       /* TRON CASE */
-      const HttpProvider = TronWeb.providers.HttpProvider;
-      const fullNode = new HttpProvider(this.TRX_FULLNODE);
+      //const HttpProvider = TronWeb.providers.HttpProvider;
+      //const fullNode = new HttpProvider(this.TRX_FULLNODE);
       // this.tronWeb = new TronWeb({ fullHost: this.TRX_FULLNODE }); // Old used
       this.tronWeb = new TronWeb({
          fullHost: this.TRX_FULLNODE,
          headers: { apikey: config.NODE.TRX_API_KEY }
       });
 
-      /* ETH CASE*/
-      const eth_provider = new Web3.providers.HttpProvider(this.ETH_FULLNODE);
-      this.ETH_Web3 = new Web3(eth_provider);
 
-      /** BSC CASE */
-      const bsc_provider = new Web3.providers.HttpProvider(this.BSC_FULLNODE);
-      this.BSC_Web3 = new Web3(bsc_provider);
    }
 
    public async GetConfirmedTransaction(tx_hash: string, block_number: number) {
@@ -82,8 +65,6 @@ class BlockchainHelper {
          return { status: false, data: err };
       }
    }
-
-
 
    /* TRON CASE */
    public async Trc20_Token(address: string) {
@@ -185,155 +166,7 @@ class BlockchainHelper {
          return null;
       }
    }
-   //BNB
 
-   public Fetch_Balance_bnb = async (address: string, coin: any) => {
-      let bal_data: { status: boolean, balance: number } = { status: false, balance: 0 };
-      try {
-         if (coin.is_token == 1) {
-
-            switch (coin.token_type.toLowerCase()) {
-
-               case TokenStandard.BEP20:
-
-                  let token_data: any = await this.BEP20_Token_Fetch_Balance(
-                     address, //// wallet_address
-                     coin.token_address ? coin.token_address : null/// contract_address
-                  )
-                  if (token_data.status) {
-                     return { status: true, balance: token_data.balance }
-                  }
-                  break;
-               // case TokenStandard.ERC721:
-               //     balance = await this.ERC721_Token_Fetch_Balance(
-               //         address, //// wallet_address
-               //         coin.token_address ? coin.token_address : null /// contract_address
-               //     )
-               //     break;
-            }
-         } else {
-            let coin_data: any = await this.BSC_Coin_Fetch_Balance(address);
-            if (coin_data.status) {
-               return { status: true, balance: coin_data.balance }
-            }
-         }
-         return bal_data;
-      } catch (error: any) {
-         console.error(`error in Bsc_Helper BSC_Fetch_Balance error >>`, error);
-         return bal_data;
-      }
-   }
-   public BEP20_Token_Fetch_Balance = async (wallet_address: string, contract_address: string | null) => {
-      let bal_data: { status: boolean, balance: number } = { status: false, balance: 0 };
-      try {
-         if (contract_address) {
-            const contract = await new this.BSC_Web3.eth.Contract(
-               config.CONTRACT_ABI as AbiItem[],
-               contract_address
-            );
-            const decimals = await contract.methods.decimals().call();
-            const balance = await contract.methods.balanceOf(wallet_address).call();
-            const tokenBalance = await Utility_Helper.bigNumberSafeMath(
-               balance, '/', Math.pow(10, decimals)
-            );
-            let tokBalance: string = await Utility_Helper.exponentialToDecimal(tokenBalance)
-            return { status: true, balance: Number(tokBalance) };
-         }
-         return bal_data;
-      } catch (error) {
-         console.error(`error in BscHelper BEP20_Token_Fetch_Balance error >>`, error);
-         return bal_data;
-      }
-   }
-   public BSC_Coin_Fetch_Balance = async (address: string) => {
-      let bal_data: { status: boolean, balance: number } = { status: false, balance: 0 };
-      try {
-         const balance: string = await this.BSC_Web3.eth.getBalance(address);
-         const tokenBalance = await Utility_Helper.bigNumberSafeMath(
-            balance, '/', Math.pow(10, 18)
-         );
-         let coinBalance: string = await Utility_Helper.exponentialToDecimal(tokenBalance)
-         return { status: true, balance: Number(coinBalance) }
-      } catch (error: any) {
-         console.error(`error in Bsc_Helper Coin_Fetch_Balance error >>`, error);
-         return bal_data;
-      }
-   }
-
-   //eth
-   public async ETH_Fetch_Balance(address: string, coin: any) {
-      let bal_data: { status: boolean, balance: number } = { status: false, balance: 0 };
-      try {
-         if (coin.is_token == 1) {
-
-            switch (coin.token_type.toLowerCase()) {
-
-               case TokenStandard.ERC20:
-
-                  let token_data: any = await this.ERC20_Token_Fetch_Eth_Balance(
-                     address, //// wallet_address
-                     coin.token_address ? coin.token_address : null/// contract_address
-                  )
-                  if (token_data.status) {
-                     return { status: true, balance: token_data.balance }
-                  }
-                  break;
-               // case TokenStandard.ERC721:
-               //     balance = await this.ERC721_Token_Fetch_Balance(
-               //         address, //// wallet_address
-               //         coin.token_address ? coin.token_address : null /// contract_address
-               //     )
-               //     break;
-            }
-
-         } else {
-            let coin_data: any = await this.ETH_Coin_Fetch_Balance(address);
-            if (coin_data.status) {
-               return { status: true, balance: coin_data.balance }
-            }
-         }
-         return bal_data;
-      } catch (error: any) {
-         console.error(`error in ETH_Helper ETH_Fetch_Balance error >>`, error);
-         return bal_data;
-      }
-   }
-   public async ERC20_Token_Fetch_Eth_Balance(wallet_address: string, contract_address: string | null) {
-      let bal_data: { status: boolean, balance: number } = { status: false, balance: 0 };
-      try {
-         if (contract_address) {
-            const contract: any = await new this.ETH_Web3.eth.Contract(
-               config.CONTRACT_ABI as AbiItem[],
-               contract_address
-            );
-            const decimals = await contract.methods.decimals().call();
-            const balance = await contract.methods.balanceOf(wallet_address).call();
-            const tokenBalance = await Utility_Helper.bigNumberSafeMath(
-               balance, '/', Math.pow(10, decimals)
-            );
-            let tokBalance: string = await Utility_Helper.exponentialToDecimal(tokenBalance)
-            return { status: true, balance: Number(tokBalance) };
-         }
-         return bal_data;
-      } catch (error) {
-         console.error(`error in ETHHelper ERC20_Token_Fetch_Balance error >>`, error);
-         return bal_data;
-      }
-   }
-   public async ETH_Coin_Fetch_Balance(address: string) {
-      let bal_data: { status: boolean, balance: number } = { status: false, balance: 0 };
-      try {
-         const balance: any = await this.ETH_Web3.eth.getBalance(address);
-         const tokenBalance = await Utility_Helper.bigNumberSafeMath(
-            balance, '/', Math.pow(10, 18)
-         );
-         let coinBalance: string = await Utility_Helper.exponentialToDecimal(tokenBalance)
-         return { status: true, balance: Number(coinBalance) }
-      } catch (error: any) {
-         console.error(`error in ETH_Helper Coin_Fetch_Balance error >>`, error);
-         return bal_data;
-      }
-   }
 
 }
 export let Blockchain_Helper = new BlockchainHelper();

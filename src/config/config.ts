@@ -66,12 +66,8 @@ export const config = {
    //    tron_all_blocks: zookeeperConfig.config.tron_all_blocks,
    // },
    NODE: {
-      ETH_RPC_URL: zookeeperConfig.config.ETH_RPC_URL,
-      BTC_RPC_URL: zookeeperConfig.config.BTC_RPC_URL,
-      BTC_API_KEY: zookeeperConfig.config.BTC_API_KEY,
       TRX_RPC_URL: zookeeperConfig.config.TRX_RPC_URL,
-      TRX_API_KEY: zookeeperConfig.config.TRX_API_KEY,
-      BNB_RPC_URL: zookeeperConfig.config.BNB_RPC_URL
+      TRX_API_KEY: zookeeperConfig.config.TRX_API_KEY
    },
    LAST_BLOCK_FILE_PATH: __dirname + "/lastBlock.txt",
    READ_BEHINED_BLOCK_TRON: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.READ_BEHINED_BLOCK_TRON}`,

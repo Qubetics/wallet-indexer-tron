@@ -5,8 +5,6 @@ import { config } from '../config';
 import { CatchErrorMsgsModel } from '../models/model';
 import { CoinFamily } from '../enum';
 import { Blockchain_Helper } from './blockchain.helper';
-import utxo from './utxo';
-
 
 class Global_helper {
     public async save_error_logs(fn_name: string, error_message: any) {
@@ -33,32 +31,7 @@ class Global_helper {
     public async Fetch_Balance(coin_data: any, wallet_address: string,) {
         let bal_data: { status: boolean, balance: number } = { status: false, balance: 0 };
         try {
-
             switch (coin_data.coin_family) {
-                // case CoinFamily.BNB:
-                //     console.log("bnb bnb")
-                //     let bsc_data: any = await Blockchain_Helper.Fetch_Balance_bnb(wallet_address, coin_data)
-                //     if (bsc_data.status) {
-                //         return { status: true, balance: bsc_data.balance }
-                //     }
-                //     break;
-
-                // case CoinFamily.ETH:
-                //     console.log("eth eth")
-                //     let eth_data: any = await Blockchain_Helper.ETH_Fetch_Balance(wallet_address, coin_data)
-                //     if (eth_data.status) {
-                //         return { status: true, balance: eth_data.balance }
-                //     }
-                //     break;
-
-                // case CoinFamily.BTC:
-                //     console.log("btc btc")
-                //     let btc_data: any = await utxo.getUserBtcBalance(wallet_address)
-                //     if (btc_data.status) {
-                //         return { status: true, balance: btc_data.balance }
-                //     }
-                //     break;
-
                 case CoinFamily.TRON:
                     console.log("trx trx")
                     let tron_data: any = await Blockchain_Helper.TRX_Fetch_Balance(wallet_address, coin_data)
