@@ -159,6 +159,9 @@ class queue_transactions {
             );
 
           is_token = await Blockchain_Helper.Trc20_Token(contractAddress);
+          console.log('is_token >>>', is_token);
+          console.log('data.tx_id >>>', data.tx_id);
+
           const fromAddressHex = data.contract[0]?.parameter?.value?.owner_address;
           const fromAddress = await Blockchain_Helper.tronWeb.address.fromHex(fromAddressHex);
 
