@@ -161,40 +161,42 @@ class queue_transactions {
           is_token = await Blockchain_Helper.Trc20_Token(contractAddress);
           console.log('is_token >>>', is_token);
           console.log('data.tx_id >>>', data.tx_id);
+          if (is_token) {
+            const fromAddressHex = data.contract[0]?.parameter?.value?.owner_address;
+            const fromAddress = await Blockchain_Helper.tronWeb.address.fromHex(fromAddressHex);
 
-          const fromAddressHex = data.contract[0]?.parameter?.value?.owner_address;
-          const fromAddress = await Blockchain_Helper.tronWeb.address.fromHex(fromAddressHex);
+            const inputData = data.contract[0]?.parameter?.value?.data;
+            const toAddressHex = '41' + inputData.substring(10 + 22, 10 + 62); // or input.substring(32, 72)
+            const toAddress = await Blockchain_Helper.tronWeb.address.fromHex(toAddressHex);
 
-          const inputData = data.contract[0]?.parameter?.value?.data;
-          const toAddressHex = '41' + inputData.substring(10 + 22, 10 + 62); // or input.substring(32, 72)
-          const toAddress = await Blockchain_Helper.tronWeb.address.fromHex(toAddressHex);
+            const amountHex = inputData.substring(72, 72 + 64);
+            // console.log(amountHex); 
 
-          const amountHex = inputData.substring(72, 72 + 64);
-          // console.log(amountHex); 
+            const amount: any = await Utility_Helper.bigNumberSafeMath(
+              await Blockchain_Helper.tronWeb.toDecimal("0x" + amountHex),
+              "/",
+              is_token.decimals
+            );
+            transaction.token = is_token;
+            transaction.tx_id = data.tx_id;
+            transaction.fromAddress = fromAddress;
+            transaction.toAddress = toAddress;
+            transaction.amount = amount;
+            transaction.blockId = data.block_number;
 
-          const amount: any = await Utility_Helper.bigNumberSafeMath(
-            await Blockchain_Helper.tronWeb.toDecimal("0x" + amountHex),
-            "/",
-            is_token.decimals
-          );
-          transaction.token = is_token;
-          transaction.tx_id = data.tx_id;
-          transaction.fromAddress = fromAddress;
-          transaction.toAddress = toAddress;
-          transaction.amount = amount;
-          transaction.blockId = data.block_number;
+            // const transactionInfo: any = await Blockchain_Helper.tronWeb.trx.getTransactionInfo(data.tx_id);
+            // if (transactionInfo?.data && Object.keys(transactionInfo.data).length > 0) {
+            //   const transFee = transactionInfo.data?.fee ? await Blockchain_Helper.tronWeb.fromSun(transactionInfo.data.fee) : 0;
+            //   const bandWidth = transactionInfo.data?.receipt?.net_usage || 0;
+            //   const energy = transactionInfo.data?.receipt?.energy_usage_total || 0;
+            //   transaction.trnx_fee = transFee;
+            // }
 
-          // const transactionInfo: any = await Blockchain_Helper.tronWeb.trx.getTransactionInfo(data.tx_id);
-          // if (transactionInfo?.data && Object.keys(transactionInfo.data).length > 0) {
-          //   const transFee = transactionInfo.data?.fee ? await Blockchain_Helper.tronWeb.fromSun(transactionInfo.data.fee) : 0;
-          //   const bandWidth = transactionInfo.data?.receipt?.net_usage || 0;
-          //   const energy = transactionInfo.data?.receipt?.energy_usage_total || 0;
-          //   transaction.trnx_fee = transFee;
-          // }
+            await tron_tx_status_deposit_withdraw.add_trnx_to_queue(
+              transaction
+            );
+          }
 
-          await tron_tx_status_deposit_withdraw.add_trnx_to_queue(
-            transaction
-          );
           // console.log("is_token 1>>>", data.tx_id, is_token ? is_token.coin_id : null, contractAddress)
           //============================================================================================
           // let transactionInfo: any = null;
