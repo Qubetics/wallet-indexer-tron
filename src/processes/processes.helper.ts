@@ -269,7 +269,7 @@ class TronProcessHelper {
           console.log("Not our wallet address", wallet_address)
         }
       }
-      
+
       if (coin_details.added_by) {
         console.log("coin.added_by exist", coin_details.added_by)
         if (coin_details.added_by == 'user') {
@@ -366,6 +366,7 @@ class TronProcessHelper {
   public async fetchWalletAddress() {
     try {
       const getaddressQuery = `SELECT wa.user_id,wa.wallet_address as address, wa.wallet_name FROM wallets as wa INNER JOIN coins as co ON co.coin_id=wa.coin_id  WHERE wa.wallet_address != '' AND wa.wallet_address IS NOT null AND co.coin_family=${config.STATIC_COIN_FAMILY.TRX} GROUP BY wa.wallet_address`;
+      console.log('getaddressQuery >>', getaddressQuery);
       const addresses: any = await database.db_read.query(getaddressQuery, {
         type: Sequelize.QueryTypes.SELECT,
       });
@@ -433,28 +434,37 @@ class TronProcessHelper {
   // };
 
 
-  public async get_coin_id(trnx: any) {
+  public async get_coin_id(txId: string): Promise<{
+    is_token: any | null;
+    token_address: string | null;
+    trnx_info: any | null;
+  }> {
     try {
-      const trnx_info: any = await Blockchain_Helper.tronWeb.trx.getTransactionInfo(trnx.data.txID)
-      if (trnx_info?.log) {
-        let logs: any = trnx_info?.log[0];
-        let token_address: any = await Blockchain_Helper.tronWeb.address.fromHex('41' + logs.address)
-        // console.log("token_address>>>", token_address, trnx.data.txID)
-        let is_token = await Blockchain_Helper.Trc20_Token(token_address)
-        if (is_token != null) {
-          // console.log("is_token not != null", trnx.data.txID, is_token.coin_id)
-          return { is_token: is_token, token_address: token_address };
-        } else {
-          // console.log("is_token 2 === null", trnx.data.txID);
-          return { is_token: null, token_address: null };
-        }
+      const trnxInfo = await Blockchain_Helper.tronWeb.trx.getTransactionInfo(txId);
+
+      const logs = trnxInfo?.log?.[0];
+      if (!logs || !logs.address) {
+        return { is_token: null, token_address: null, trnx_info: null };
       }
-      return { is_token: null, token_address: null };
-    } catch (err: any) {
-      console.error('Error in get_coin_id>>', err)
-      return { is_token: null, token_address: null };
+
+      const tokenAddress = Blockchain_Helper.tronWeb.address.fromHex('41' + logs.address);
+      const isToken = await Blockchain_Helper.Trc20_Token(tokenAddress);
+
+      if (isToken) {
+        return {
+          is_token: isToken,
+          token_address: tokenAddress,
+          trnx_info: trnxInfo
+        };
+      }
+
+      return { is_token: null, token_address: null, trnx_info: null };
+    } catch (err) {
+      console.error('Error in getCoinId:', err);
+      return { is_token: null, token_address: null, trnx_info: null };
     }
   }
+
 
 }
 

@@ -4,7 +4,7 @@ import {
   Blockchain_Helper,
   node_issue_error_log_queries,
 } from "../helpers/index";
-import { blocks_trnx } from "../interface/index";
+import { blocks_trnx, transaction_data } from "../interface/index";
 import { TronOldBLockModel } from "../models/model";
 import tronProcessHelper from "./processes.helper";
 import { KEYS } from "../enum/index";
@@ -26,7 +26,7 @@ class Process_Blocks {
   public node_alert_tron: string = config.REDISKEYS.NODE_ALERT_TRON;
   public specific_block: string = config.REDISKEYS.SPECIFIC_BLOCK_TRON;
 
-  constructor() {}
+  constructor() { }
 
   public async getBlocks() {
     try {
@@ -141,34 +141,44 @@ class Process_Blocks {
         block_number
       );
 
-      const blockInfo: any = getBlock.transactions;
+      const transactions: any = getBlock.transactions;
 
-      if (!getBlock.transactions) return;
+      if (!transactions) return;
 
-      for await (let transactions of blockInfo) {
+      for await (let transaction of transactions) {
         // console.log('tx.hash >>', transactions.txID, 'blockId >>>', block_number);
-        let data: blocks_trnx = {
+        const transaction_data: transaction_data = {
+          status: transaction?.ret[0]?.contractRet == "SUCCESS" ? 'SUCCESS' : 'FAILED',
+          contract: transaction.raw_data?.contract ? transaction.raw_data?.contract : [],
           block_number: block_number,
-          tx_id: transactions.txID,
           retry_count: 0,
+          tx_id: transaction.txID,
           key: null,
           pair: null,
-        };
+        }
+        // console.log('transaction_data >>>', transaction_data);
+        // let data: blocks_trnx = {
+        //   block_number: block_number,
+        //   tx_id: transactions.txID,
+        //   retry_count: 0,
+        //   key: null,
+        //   pair: null,
+        // };
 
         if (key == KEYS.latestBlock) {
-          data.key = "latest";
+          transaction_data.key = "latest";
           // let queue_length: any = await RabbitMq.queue_length(this.tron_all_blocks)
           // console.log("queue_length>>>", queue_length)
           // console.log("latest added to queue block>>", data.block_number, "tx_id>>", data.tx_id)
-          await kafkaHelper.produceMessage(this.trx_block_tx_topic, data);
+          await kafkaHelper.produceMessage(this.trx_block_tx_topic, transaction_data);
 
           // await RabbitMq.send_tx_to_queue(this.tron_all_blocks, Buffer.from(JSON.stringify(data)))
         } else {
-          data.key = "behined & specific";
-          // console.log("behined added to queue block>>", data.block_number, "tx_id>>", data.tx_id)
+          transaction_data.key = "behined & specific";
+          // console.log("behined added to queue block>>", transaction_data.block_number, "tx_id>>", transaction_data.tx_id);
           await kafkaHelper.produceMessage(
             this.trx_behind_block_tx_topic,
-            data
+            transaction_data
           );
           // await RabbitMq.send_tx_to_queue(this.tron_behined_transactions, Buffer.from(JSON.stringify(data)))
         }

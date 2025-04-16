@@ -6,6 +6,7 @@ import { Utility_Helper, kafkaHelper, trnx_history_queries, wallet_queries } fro
 import { Op } from "sequelize";
 import tronProcessHelper from "./processes.helper";
 import { TrnxBlockchainStatus } from "../enum";
+import { Transaction } from "../interface";
 // import { global_helper } from '../helpers/index'
 
 
@@ -46,13 +47,14 @@ class TronDepositWithdrawProcess {
   //   );
   // };
 
-  public async checkIfOurTx(data: any) {
+  public async checkIfOurTx(data: Transaction) {
     console.log("Entered into checkIfOurTx>>", data)
 
     let coin_data: any = null;
 
-    if (data.token_address) {
-      coin_data = await tronProcessHelper.checkIfContract(data.token_address)
+    if (data.token) {
+      // coin_data = await tronProcessHelper.checkIfContract(data.token_address)
+      coin_data = data.token;
     } else {
       coin_data = await tronProcessHelper.NativeCoinByCoinFamily(CoinFamily.TRON);
     }
@@ -66,7 +68,7 @@ class TronDepositWithdrawProcess {
       isNFTToken: data.isNFTToken || false,
       status: 'completed',
       blockchain_status: TrnxBlockchainStatus.CONFIRMED,
-      txType: data.type,
+      txType: data.txType,
       trnx_fee: data.trnx_fee
     };
     await tronDepositWithdrawProcess.SaveNewTrnx(webhookTx)
