@@ -245,9 +245,9 @@ class TronDepositWithdrawProcess {
         //   from_address, /// wallet_address,
         //   coin//trx_data /// coin
         // );
-        console.log("456 adding_coins_to_queue ")
+        // console.log("456 adding_coins_to_queue ")
 
-        await tronProcessHelper.adding_coins_to_queue(from_address, coin)
+        //await tronProcessHelper.adding_coins_to_queue(from_address, coin)
 
         if (coin.is_token) {
           const native_coin: any = await ethProcessHelper.NativeCoinByCoinFamily(coin.coin_family);
