@@ -154,6 +154,7 @@ class queue_transactions {
               transaction
             );
           }
+        }
       } else {
         console.log("FAILED", data.tx_id);
       }
