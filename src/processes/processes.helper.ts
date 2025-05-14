@@ -19,9 +19,7 @@ class TronProcessHelper {
   public tron_token_10: string = config.TOKEN_TYPE10_TRON;
   public read_behined_block: string = config.READ_BEHINED_BLOCK_TRON;
   public blocks: any = config.BLOCKS;
-  // public user_all_coins_balance_update: any = config.USER_ALL_COINS_BALANCE_UPDATE;
   public update_user_all_coins_balance_topic: any = config.KAFKA_BALANCE.UPDATE_USER_ALL_TRX_COINS_BALANCE_TOPIC;
-  // public tron_update_balance_of_coin: any = config.TRON_UPDATE_BALANCE_OF_COIN;
   public trx_pending_balance_update_topic: any = config.KAFKA_BALANCE.TRX_PENDING_BALANCE_UPDATE_TOPIC;
 
 
@@ -29,7 +27,6 @@ class TronProcessHelper {
 
   constructor() {
     this.fetchTRC20Tokens();
-    // this.fetchERC721Tokens();
     this.fetchWalletAddress();
   }
   public async fetchTRC20Tokens() {
@@ -68,7 +65,6 @@ class TronProcessHelper {
 
       if (!getBlockInfo || !getBlockInfo.block_header || !getBlockInfo.block_header.raw_data) {
         console.error('Unable to fetch current block');
-        // await global_helper.save_error_logs('Tron_setBlocks', 'Unable to fetch current block')
         await node_issue_error_log_queries.node_issue_error_logs_create({
           function: "setBlocks",
           block_number: null,
@@ -98,7 +94,6 @@ class TronProcessHelper {
       }
     } catch (err: any) {
       console.error("Error in  getBlocks", err)
-      // await global_helper.save_error_logs('TRON_setBlocksss', err.message)
       await node_issue_error_log_queries.node_issue_error_logs_create({
         function: "setBlocks",
         block_number: null,
@@ -154,7 +149,6 @@ class TronProcessHelper {
       return true;
     } catch (err: any) {
       console.error("Error in diffence_blocks_add_in_redis>>", err)
-      // await global_helper.save_error_logs('TRON_diff_blocks_add_in_db', err.message)
       return false;
     }
   }
@@ -255,7 +249,6 @@ class TronProcessHelper {
         if (wallet_data) {
           let data_obj: any = {
             user_id: wallet_data.user_id,
-            // email: wallet_data.email,
             wallet_name: wallet_data.wallet_name,
             wallet_address: wallet_address,
             coin_id: coin_details.coin_id,
@@ -303,12 +296,10 @@ class TronProcessHelper {
       console.log("Under adding_coins_to_queue>>>wallet_address>>", wallet_address, "coin_id>>>", coin_details.coin_id)
       if (wallet_address && coin_details.coin_id) {
         await kafkaHelper.produceMessage(this.trx_pending_balance_update_topic, { wallet_address: wallet_address, coin_data: coin_details, retry_count: 0 })
-        //await RabbitMq.send_tx_to_queue(this.tron_update_balance_of_coin, Buffer.from(JSON.stringify({ wallet_address: wallet_address, coin_id: coin_details.coin_id })))
         return true;
       }
     } catch (err: any) {
       console.error("Error in adding_coins_to_queue>>>", err)
-      // await commonHelper.save_error_logs("adding_coins_to_queue", err.message);
       return false;
     }
   }
@@ -327,8 +318,6 @@ class TronProcessHelper {
 
       if (wallet_data) {
         await kafkaHelper.produceMessage(this.update_user_all_coins_balance_topic, { user_id: wallet_data.user_id, coin_family })
-
-        // await RabbitMq.send_tx_to_queue(this.user_all_coins_balance_update, Buffer.from(JSON.stringify({ user_id: wallet_data.user_id, coin_family })))
         return true;
       }
     } catch (err: any) {
@@ -377,62 +366,6 @@ class TronProcessHelper {
       console.log('fetchWalletAddress >>>');
     }
   };
-
-  // public async getLastBlockProcessed(blockNumber: number) {
-  //   try {
-  //     const getAsync: any = promisify(redisClient.get).bind(redisClient);
-  //     const value: any = await getAsync(config.LAST_BLOCK_NUMBER || "");
-  //     if (value) return parseInt(value);
-  //     redisClient.set(
-  //       config.LAST_BLOCK_NUMBER || "",
-  //       blockNumber.toString()
-  //     );
-  //   } catch (error: any) {
-  //     console.error('getLastBlockProcessed >>>>>', error);
-  //   }
-  // };
-  // public async updateLastBlockProcessed(lastBlockProcessed: number) {
-  //   try {
-  //     const updatedBlockNumber: number = ++lastBlockProcessed;
-  //     redisClient.set(
-  //       config.LAST_BLOCK_NUMBER || "",
-  //       updatedBlockNumber.toString()
-  //     );
-  //   } catch (error: any) {
-  //     console.error('updateLastBlockProcessed >>>>', error);
-  //   }
-  // };
-  // public fetchERC721Tokens = async () => {
-  //   try {
-  //     const getTokenQuery = `SELECT * FROM coins WHERE coin_status=1 AND coin_family=${config.COIN_FAMILY_TRON} AND (token_type!='${config.TOKEN_TYPE_TRON}' OR token_type is null)`;
-  //     const tokens: any = await database.db_read.query(getTokenQuery, {
-  //       type: Sequelize.QueryTypes.SELECT,
-  //     });
-  //     redisClient.set(config.TOKEN_TYPE10_TRON, JSON.stringify(tokens));
-  //   } catch (error: any) {
-  //     console.error('fetchERC721Tokens >>>>', error);
-  //   }
-  // };
-
-  // public checkIfOurNFTContract = async (address: string) => {
-  //   try {
-  //     const getAsync = promisify(redisClient.get).bind(redisClient);
-  //     const value = await getAsync(config.TOKEN_TYPE10_TRON);
-
-  //     const erc721Tokens: any = value ? JSON.parse(value) : [];
-
-  //     const token = erc721Tokens.find(
-  //       (el: any) => Number(el.is_token) === Number(BooleanEnum.true) && el.token_address.toUpperCase() === address.toUpperCase()
-  //     );
-
-  //     if (token) return token;
-  //     return null;
-  //   } catch (error: any) {
-  //     console.error('checkIfOurNFTContract >>>>>', error);
-  //     return null;
-  //   }
-  // };
-
 
   public async get_coin_id(txId: string): Promise<{
     is_token: any | null;

@@ -18,8 +18,6 @@ export interface ITrnxHistoryInterface {
     queue_check_count: number | 0;
     amount: number;
     block_id: number;
-    // block_hash: string;
-    // speedup: string;
     nonce: number;
     tx_fee: number;
     swap_fee: number | 0;
@@ -28,5 +26,4 @@ export interface ITrnxHistoryInterface {
     gas_reverted: number;
     fiat_price: number | null,
     fiat_type: string | null,
-    // country_code: string,
 }

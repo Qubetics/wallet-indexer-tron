@@ -15,8 +15,6 @@ class Process_Blocks {
   public old_tron_block: string = config.REDISKEYS.OLD_BLOCK_TRON;
   public new_old_block: string = config.REDISKEYS.NEW_BLOCK_TRON;
   public tron_coin_family: any = config.STATIC_COIN_FAMILY.TRX;
-  // public tron_behined_transactions: string = config.TRANSACTIONS.tron_behined_transactions;
-  // public tron_all_blocks: string = config.TRANSACTIONS.tron_all_blocks;
   public trx_block_tx_topic = config.KAFKA_BLOCKS.TRX_BLOCK_TX_TOPIC;
   public trx_behind_block_tx_topic =
     config.KAFKA_BLOCKS.TRX_BEHIND_BLOCK_TX_TOPIC;
@@ -93,11 +91,9 @@ class Process_Blocks {
         }
       } else {
         console.log(" no old block and no new block");
-        // await global_helper.save_error_logs('TRON_setBlocks', 'No old block no new block')
       }
     } catch (err: any) {
       console.error("Error in getBlocks", err);
-      // await global_helper.save_error_logs('Tron_getBlocks', err.message)
       await node_issue_error_log_queries.node_issue_error_logs_create({
         function: "getBlocks",
         block_number: null,
@@ -118,7 +114,6 @@ class Process_Blocks {
       );
 
       let block_updated: number = blockNumber + 1;
-      // Setting block number in redis
       await tronProcessHelper.setKeyValuePair(
         this.tron_blocks,
         this.old_tron_block,
@@ -132,7 +127,6 @@ class Process_Blocks {
       await this.getTxFromBlock(blockNumber, KEYS.latestBlock);
     } catch (err: any) {
       console.error("Error in readBlocks:", (err as Error).message);
-      // await global_helper.save_error_logs('TRON_readBlocks', err.message)
     }
   }
   public async getTxFromBlock(block_number: number, key: string) {
@@ -146,7 +140,6 @@ class Process_Blocks {
       if (!transactions) return;
 
       for await (let transaction of transactions) {
-        // console.log('tx.hash >>', transactions.txID, 'blockId >>>', block_number);
         const transaction_data: transaction_data = {
           status: transaction?.ret[0]?.contractRet == "SUCCESS" ? 'SUCCESS' : 'FAILED',
           contract: transaction.raw_data?.contract ? transaction.raw_data?.contract : [],
@@ -156,31 +149,16 @@ class Process_Blocks {
           key: null,
           pair: null,
         }
-        // console.log('transaction_data >>>', transaction_data);
-        // let data: blocks_trnx = {
-        //   block_number: block_number,
-        //   tx_id: transactions.txID,
-        //   retry_count: 0,
-        //   key: null,
-        //   pair: null,
-        // };
 
         if (key == KEYS.latestBlock) {
           transaction_data.key = "latest";
-          // let queue_length: any = await RabbitMq.queue_length(this.tron_all_blocks)
-          // console.log("queue_length>>>", queue_length)
-          // console.log("latest added to queue block>>", data.block_number, "tx_id>>", data.tx_id)
           await kafkaHelper.produceMessage(this.trx_block_tx_topic, transaction_data);
-
-          // await RabbitMq.send_tx_to_queue(this.tron_all_blocks, Buffer.from(JSON.stringify(data)))
         } else {
           transaction_data.key = "behined & specific";
-          // console.log("behined added to queue block>>", transaction_data.block_number, "tx_id>>", transaction_data.tx_id);
           await kafkaHelper.produceMessage(
             this.trx_behind_block_tx_topic,
             transaction_data
           );
-          // await RabbitMq.send_tx_to_queue(this.tron_behined_transactions, Buffer.from(JSON.stringify(data)))
         }
       }
     } catch (err: any) {
@@ -192,7 +170,6 @@ class Process_Blocks {
         end_block: block_number,
         status: 0,
       });
-      // await global_helper.save_error_logs('TRON_getTxFromBlock', err.message)
       await node_issue_error_log_queries.node_issue_error_logs_create({
         function: "getTxFromBlock",
         block_number: block_number.toString(),
@@ -250,7 +227,6 @@ class Process_Blocks {
       }
     } catch (err: any) {
       console.error("Error in readBehindBlock>>>>", err);
-      // await global_helper.save_error_logs('TRON_readBehindBlock', err.message)
     }
   }
   public async readSpecificBlock() {
@@ -281,7 +257,6 @@ class Process_Blocks {
       }
     } catch (err: any) {
       console.error("Error in readSpecificBlock>>>", err);
-      // await global_helper.save_error_logs('TRON_readSpecificBlock', err.message)
     }
   }
   public async testingNode() {
@@ -299,11 +274,6 @@ class Process_Blocks {
         getBlockInfo.block_header.raw_data.number
       );
       const blockInfo: any = getBlock.transactions;
-      // console.log("blockInfo>>", blockInfo[0].txID)
-
-      // Get Block Receipt
-      // const transaction: any = await Blockchain_Helper.GetConfirmedTransaction(blockInfo[0].txID)
-      // console.log("txreceipt>>", transaction)
     } catch (err: any) {
       console.error("Error in testingNode>>", err);
     }

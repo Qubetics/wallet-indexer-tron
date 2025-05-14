@@ -1,4 +1,3 @@
-// import { RabbitMq } from "../helpers/rabbitmq.helper";
 import { config } from "../config/config";
 import ethProcessHelper from './processes.helper';
 import { BooleanEnum, CoinFamily, TrnxTypeEnum, TxReqTypesEnum } from ".././enum";
@@ -7,11 +6,8 @@ import { Op } from "sequelize";
 import tronProcessHelper from "./processes.helper";
 import { TrnxBlockchainStatus } from "../enum";
 import { Transaction } from "../interface";
-// import { global_helper } from '../helpers/index'
-
 
 class TronDepositWithdrawProcess {
-  // public deposit_withdraw_process: string = config.DEPOSIT_WITHDRAW_PROCESS_TRON
 
   public startDepositQueue = async () => {
     let consumer = await kafkaHelper.kafka.consumer({
@@ -40,20 +36,12 @@ class TronDepositWithdrawProcess {
     });
   };
 
-  // public startDepositQueue = async () => {
-  //   await RabbitMq.consumeQueue(
-  //     this.deposit_withdraw_process || "",
-  //     this.checkIfOurTx
-  //   );
-  // };
-
   public async checkIfOurTx(data: Transaction) {
     console.log("Entered into checkIfOurTx>>", data)
 
     let coin_data: any = null;
 
     if (data.token) {
-      // coin_data = await tronProcessHelper.checkIfContract(data.token_address)
       coin_data = data.token;
     } else {
       coin_data = await tronProcessHelper.NativeCoinByCoinFamily(CoinFamily.TRON);
@@ -170,36 +158,9 @@ class TronDepositWithdrawProcess {
       if (Addressdeposit) {
 
         let trnxTypeD: string = "Deposit";
-        // switch (tx_type) {
-        //   case TrnxTypeEnum.SMARTCONTRACTINTERACTION:
-        //     trnxTypeD = "Smart Contract Interaction";
-        //     break;
-        //   case TrnxTypeEnum.APPROVE:
-        //     trnxTypeD = "Approval";
-        //     break;
-        //   case TrnxTypeEnum.SWAP:
-        //     trnxTypeD = "Swap";
-        //     break;
-        //   case TrnxTypeEnum.CROSS_CHAIN:
-        //     trnxTypeD = "Cross-chain Swap";
-        //     break;
-        //   default:
-        //     break;
-        // }
-
-        /** update to adrs wallet balance */
-        //============================================================================
-        // let balance: any = await Wallet_Helper.Update_Balance(
-        //   to_address, /// wallet_address,
-        //   coin// trx_data /// coin
-        // );
-        // await global_helper.check_coin_in_wallet(to_address, coin, balance)
-        //============================================================================
         console.log("123ENtering adding_coins_to_queue ")
 
         await tronProcessHelper.adding_coins_to_queue(to_address, coin)
-        //============================================================================
-
         const notiMsg = `${trnxTypeD} of ${await Utility_Helper.bigNumberSafeConversion(
           amount
         )} ${coin.coin_symbol.toUpperCase()} has been confirmed.`;
@@ -240,21 +201,12 @@ class TronDepositWithdrawProcess {
           default:
             break;
         }
-        //============================================================================
-        // await Wallet_Helper.Update_Balance(
-        //   from_address, /// wallet_address,
-        //   coin//trx_data /// coin
-        // );
-        // console.log("456 adding_coins_to_queue ")
-
-        //await tronProcessHelper.adding_coins_to_queue(from_address, coin)
 
         if (coin.is_token) {
           const native_coin: any = await ethProcessHelper.NativeCoinByCoinFamily(coin.coin_family);
           console.log("789 adding_coins_to_queue ")
           await tronProcessHelper.adding_coins_to_queue(from_address, native_coin)
         }
-        //============================================================================
 
         const notiMsg = `${trnxTypeW} of ${await Utility_Helper.bigNumberSafeConversion(
           amount

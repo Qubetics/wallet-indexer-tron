@@ -7,21 +7,14 @@ export const config = {
    DB_NAME: zookeeperConfig.config.DB_NAME,
    DB_PASSWORD: zookeeperConfig.config.DB_PASSWORD,
    DB_PORT: zookeeperConfig.config.DB_PORT,
-   // DEPOSIT_WITHDRAW_PROCESS_TRON: zookeeperConfig.config.DEPOSIT_WITHDRAW_PROCESS_TRON,
    TRON_WALLET_ADDRESS: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.TRON_WALLET_ADDRESS}`,
-   // PENDING_WITHDRAWAL_TX_PROCESS_TRON: zookeeperConfig.config.PENDING_WITHDRAWAL_TX_PROCESS_TRON,
-   // RABBIT_MQ: zookeeperConfig.config.RABBIT_MQ,
    KAFKA_BROKER: zookeeperConfig.config.KAFKA_BROKER,
    KAFKA_CLIENT_ID: zookeeperConfig.config.KAFKA_CLIENT_ID,
-   REDIS_CONN: zookeeperConfig.config.REDIS_CONN,//
+   REDIS_CONN: zookeeperConfig.config.REDIS_CONN,
    MIN_BLOCK_CONFIRMATIONS_TRON: zookeeperConfig.config.MIN_BLOCK_CONFIRMATIONS_TRON,
    TOKEN_TYPE_TRON: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.TOKEN_TYPE_TRON}`,
    TOKEN_TYPE10_TRON: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.TOKEN_TYPE10_TRON}`,
-   // COIN_FAMILY_TRON: zookeeperConfig.config.COIN_FAMILY_TRON,
    STATIC_COIN_FAMILY: zookeeperConfig.config.STATIC_COIN_FAMILY,
-   // KEYS: {
-   //    FCM_PUSH: zookeeperConfig.config.FCM_PUSH
-   // },
    REDISKEYS: {
       TRON_BLOCKS: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.TRON_BLOCKS} `,
       OLD_BLOCK_TRON: zookeeperConfig.config.OLD_BLOCK_TRON,
@@ -60,11 +53,6 @@ export const config = {
       UPDATE_USER_ALL_TRX_COINS_BALANCE_TOPIC: zookeeperConfig.config.UPDATE_USER_ALL_TRX_COINS_BALANCE_TOPIC,
       UPDATE_USER_ALL_TRX_COINS_BALANCE_GROUP_ID: zookeeperConfig.config.UPDATE_USER_ALL_TRX_COINS_BALANCE_GROUP_ID
    },
-
-   // TRANSACTIONS: {
-   //    tron_behined_transactions: zookeeperConfig.config.tron_behined_transactions,
-   //    tron_all_blocks: zookeeperConfig.config.tron_all_blocks,
-   // },
    NODE: {
       TRX_RPC_URL: zookeeperConfig.config.TRX_RPC_URL,
       TRX_API_KEY: zookeeperConfig.config.TRX_API_KEY
@@ -72,8 +60,6 @@ export const config = {
    LAST_BLOCK_FILE_PATH: __dirname + "/lastBlock.txt",
    READ_BEHINED_BLOCK_TRON: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.READ_BEHINED_BLOCK_TRON}`,
    BLOCKS: zookeeperConfig.config.BLOCKS,
-   // USER_ALL_COINS_BALANCE_UPDATE: zookeeperConfig.config.USER_ALL_COINS_BALANCE_UPDATE,
-   // TRON_UPDATE_BALANCE_OF_COIN: zookeeperConfig.config.TRON_UPDATE_BALANCE_OF_COIN,
 
    CONTRACT_ABI: [
       {

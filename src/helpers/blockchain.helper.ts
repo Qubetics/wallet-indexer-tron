@@ -11,9 +11,6 @@ class BlockchainHelper {
    public tronWeb: any;
    constructor() {
       /* TRON CASE */
-      //const HttpProvider = TronWeb.providers.HttpProvider;
-      //const fullNode = new HttpProvider(this.TRX_FULLNODE);
-      // this.tronWeb = new TronWeb({ fullHost: this.TRX_FULLNODE }); // Old used
       this.tronWeb = new TronWeb({
          fullHost: this.TRX_FULLNODE,
          headers: { apikey: config.NODE.TRX_API_KEY }
@@ -28,7 +25,6 @@ class BlockchainHelper {
             status: any;
             data: { ret: [{ contractRet: any }] };
          } = await this.tronWeb.trx.getConfirmedTransaction(tx_hash).then((result: {}) => {
-            // console.log("Inside tx_hash>>>", tx_hash)
             return { status: true, data: result };
          }).catch(async (err: any) => {
             console.error("Error in getConfirmedTransaction catch:", err?.message);
@@ -97,13 +93,6 @@ class BlockchainHelper {
                      return { status: true, balance: token_data.balance }
                   }
                   break;
-               // case TokenStandard.TRC10:
-               //    balance = await this.TRC10_Token_Balance(
-               //       address, //// wallet_address
-               //       coin.token_address /// contract_address
-               //    )
-               //    break;
-
             }
          } else {
             let coin_data: any = await this.TRX_Coin_Fetch_Balance(address);

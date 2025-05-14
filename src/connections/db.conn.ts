@@ -47,7 +47,6 @@ class Database implements DBInterface {
             acquire: 60000,
          },
       });
-      // this.syncTables();
    }
 
    public async syncTables() {

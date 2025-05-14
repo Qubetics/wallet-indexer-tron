@@ -46,14 +46,12 @@ class DeviceTokenQueries {
             throw err;
         }
     }
-    // public async device_tokens_with_limit(attr: any, where_clause: any, order: any, limit: number) {
     public async device_tokens_with_limit(attr: any, where_clause: any, order: any) {
         try {
             let data: any = await this.device_tokens.findAll({
                 attributes: attr,
                 where: where_clause,
                 order: order,
-                // limit: limit,
                 raw: true
 
             })

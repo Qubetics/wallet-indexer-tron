@@ -1,32 +1,17 @@
-// import { RabbitMq } from "../helpers/rabbitmq.helper";
 import { config } from "../config/config";
 import { BooleanEnum, GlblBoolean, NotificationTypeEnum, TRONSTATUS, TokenStandard, TrnxBlockchainStatus, TrnxStatusEnum, TrnxTypeEnum } from "../enum";
 import { Utility_Helper, Blockchain_Helper, global_helper, node_issue_error_log_queries, trnx_history_queries, coin_queries, wallet_queries, kafkaHelper } from "../helpers";
 import tronProcessHelper from "./processes.helper";
 import { Op } from "sequelize";
 class TronTxStatusUpdateProcess {
-  // public pending_withdrawl_tx: string = config.PENDING_WITHDRAWAL_TX_PROCESS_TRON;
   public tron_coin_family: any = config.STATIC_COIN_FAMILY.TRX;
-  // public tron_update_balance_of_coin: any = config.TRON_UPDATE_BALANCE_OF_COIN;
-
   public trx_pending_balance_update_topic: any = config.KAFKA_BALANCE.TRX_PENDING_BALANCE_UPDATE_TOPIC;
   public trx_pending_balance_update_group: any = config.KAFKA_BALANCE.TRX_PENDING_BALANCE_UPDATE_GROUP_ID;
-
-  // public user_all_coins_bal_update: any = config.USER_ALL_COINS_BALANCE_UPDATE;
-
   public update_user_all_coins_balance_topic: any = config.KAFKA_BALANCE.UPDATE_USER_ALL_TRX_COINS_BALANCE_TOPIC;
   public update_user_all_coins_balance_group_id: any = config.KAFKA_BALANCE.UPDATE_USER_ALL_TRX_COINS_BALANCE_GROUP_ID;
   public trx_pending_withdrawal_tx_group_id = config.KAFKA_TRANSACTIONS.TRX_PENDING_WITHDRAWAL_TX_GROUP_ID;
   public trx_pending_withdrawal_tx_topic = config.KAFKA_TRANSACTIONS.TRX_PENDING_WITHDRAWAL_TX_TOPIC;
 
-
-
-  // public startTxStatusUpdateQueue = async () => {
-  //   await RabbitMq.consumeQueue(
-  //     this.pending_withdrawl_tx || "",
-  //     this.getTx
-  //   );
-  // };
   public startTxStatusUpdateQueue = async () => {
     let consumer = await kafkaHelper.kafka.consumer({ groupId: this.trx_pending_withdrawal_tx_group_id });
     await consumer.subscribe({ topic: this.trx_pending_withdrawal_tx_topic, fromBeginning: true });
@@ -200,24 +185,19 @@ class TronTxStatusUpdateProcess {
             if (tx_type !== TrnxTypeEnum.DAPP) {
               console.log('tx_type >>>>>>>>>>>>>', tx_type);
               const native_coin: any = await tronProcessHelper.NativeCoinByCoinFamily(coin_family);
-              //============================================================================================
-              // await Wallet_Helper.Update_Balance(from_address, native_coin);
               console.log("789 adding_123coins_to_queusssse ", native_coin)
 
               await tronProcessHelper.adding_coins_to_queue(from_address, native_coin)
 
               if (trx_data?.coin?.is_token === 1 && trx_data.coin?.token_type.toLowerCase() === TokenStandard.TRC20.toLowerCase()) {
-                // await Wallet_Helper.Update_Balance(from_address, trx_data?.coin);
                 console.log("123 adding_123coins_to_queue ", trx_data?.coin)
 
                 await tronProcessHelper.adding_coins_to_queue(from_address, trx_data?.coin)
 
               }
             } else {
-              // await Wallet_Helper.Update_all_active_coin_balance(from_address);
               await tronProcessHelper.adding_address_to_queue(from_address, coin_family)
             }
-            //============================================================================================
 
             let trnxTypeW: string = "Withdraw";
             switch (tx_type) {
@@ -263,39 +243,10 @@ class TronTxStatusUpdateProcess {
           if (Addressdeposit) {
             let to_user_id: number = Addressdeposit ? Addressdeposit.user_id : 0;
             let trnxTypeD: string = "Deposit";
-            // switch (tx_type) {
-            //   case TrnxTypeEnum.DAPP:
-            //     trnxTypeD = "Smart Contract Execution";
-            //     break;
-            //   case TrnxTypeEnum.APPROVE:
-            //     trnxTypeD = "Approval";
-            //     break;
-            //   case TrnxTypeEnum.SWAP:
-            //     trnxTypeD = "Swap";
-            //     break;
-            //   case TrnxTypeEnum.CROSS_CHAIN:
-            //     trnxTypeD = "Cross chain Swap";
-            //     break;
-            //   default:
-            //     break;
-            // }
+
             if (to_address !== from_address) {
-              // if (tx_type !== TrnxTypeEnum.DAPP) {
-              //============================================================================================
-              // let balance: any = await Wallet_Helper.Update_Balance(
-              //   to_address,
-              //   trx_data?.coin
-              // );
-              // await global_helper.check_coin_in_wallet(to_address, trx_data?.coin, balance)
-              //
               console.log("ENtering adding_coins_to_queue ")
               await tronProcessHelper.adding_coins_to_queue(to_address, trx_data.coin)
-              // } else {
-              //   // await Wallet_Helper.Update_all_active_coin_balance(to_address);
-              //   console.log("ENtering adding_address_to_queue ")
-
-              //   await tronProcessHelper.adding_address_to_queue(to_address, coin_family)
-              // }
             }
 
             const notiMsg = `${trnxTypeD} of ${await Utility_Helper.bigNumberSafeConversion(
@@ -381,22 +332,12 @@ class TronTxStatusUpdateProcess {
     }).catch((err: Error) => {
       console.log("🔥 ~ ~ startTxStatusUpdateQueue error", err);
     });
-
-    // await RabbitMq.consumeQueue(
-    //   this.tron_update_balance_of_coin || "",
-    //   this.user_balance
-    // );
   };
   public async user_balance(data: any) {
     try {
       console.log("data in user_balance tron_update_balance_of_coin >>>>>>.", data)
       if (data) {
         console.log("entered into data in user_balance tron_update_balance_of_coin >>>>>>.", data)
-
-        // let coin_data: any = await coin_queries.coins_find_one(
-        //   ["coin_id", "coin_family", "token_type", "coin_symbol", "is_token", "token_address"],
-        //   { coin_id: data.coin_id }
-        // )
         console.log("entered in data in user_balance coin_data >>>>>>.", data.coin_data)
         if (data.coin_data) {
           const coin_data = data.coin_data;
@@ -417,7 +358,6 @@ class TronTxStatusUpdateProcess {
               let retry_count = data.retry_count + 1;
               await kafkaHelper.produceMessage(this.trx_pending_balance_update_topic, { wallet_address: data.wallet_address, coin_data: data.coin_data, retry_count: retry_count })
             }
-            //await RabbitMq.send_tx_to_queue(this.tron_update_balance_of_coin, Buffer.from(JSON.stringify({ wallet_address: data.wallet_address, coin_id: data.coin_id })))
           }
         } else {
           console.log("data not present for this coin id.", data.coin_data)
@@ -441,11 +381,6 @@ class TronTxStatusUpdateProcess {
     }).catch((err: Error) => {
       console.log("🔥 ~ ~ startTxStatusUpdateQueue error", err);
     });
-
-    // await RabbitMq.consumeQueue(
-    //   this.user_all_coins_bal_update || "",
-    //   this.user_all_balances
-    // );
   };
   public async user_all_balances(data: any) {
     try {
@@ -479,8 +414,6 @@ class TronTxStatusUpdateProcess {
               } else {
                 console.log("not got balance data of this wallet addres, reason node error under user_all_balances")
                 await kafkaHelper.produceMessage(this.trx_pending_balance_update_topic, { wallet_address: data.wallet_address, coin_data: all_coins[i].coin_data, retry_count: 0 })
-
-                // await RabbitMq.send_tx_to_queue(this.user_all_coins_bal_update, Buffer.from(JSON.stringify({ user_id: data.user_id })))
               }
             } else {
               console.log("no coin data")

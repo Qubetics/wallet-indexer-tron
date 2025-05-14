@@ -27,7 +27,6 @@ class TRONStartProcess {
    }
    public consume_read_block_queue() {
       setTimeout(async () => {
-         // await tron_tx_status_deposit_withdraw.consume_queue_trnx();
          await tron_tx_status_deposit_withdraw.startBlockTxQueue();
          await tron_tx_status_deposit_withdraw.startBehindBlockTxQueue();
       }, 10000);

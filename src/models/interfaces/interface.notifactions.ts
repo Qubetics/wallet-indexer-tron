@@ -2,8 +2,6 @@ export interface NotificationInterface {
   notification_id?: number;
   message: string;
   amount: number;
-  // alert_price: any | null,
-  // fiat_type: string | null,
   from_user_id: number;
   to_user_id?: number | null;
   notification_type: string;
@@ -12,9 +10,7 @@ export interface NotificationInterface {
   coin_symbol: string | null;
   coin_id: number;
   coin_family: number;
-  // resent_count?: number | null;
   view_status?: string | null;
   state: string | null;
-  // coin_price_in_usd?: {}
   wallet_address?: string | null;
 }

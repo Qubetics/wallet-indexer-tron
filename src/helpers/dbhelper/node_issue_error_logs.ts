@@ -6,12 +6,9 @@ class NodeIssueErrorLogQueries {
 
     public async node_issue_error_logs_create(obj: any) {
         try {
-            //let data: any = await this.node_issue_error_logs.create(obj)
-            //return data;
             return true;
         } catch (err: any) {
             console.error("Error in node_issue_error_logs_create>>", err)
-            // throw err;
             return true;
         }
     }
