@@ -44,7 +44,7 @@ class TronDepositWithdrawProcess {
     if (data.token) {
       coin_data = data.token;
     } else {
-      coin_data = await tronProcessHelper.NativeCoinByCoinFamily(CoinFamily.TRON);
+      coin_data = await tronProcessHelper.checkIfContract('NativeCoin');
     }
     const webhookTx: any = {
       coin: coin_data,
@@ -203,7 +203,7 @@ class TronDepositWithdrawProcess {
         }
 
         if (coin.is_token) {
-          const native_coin: any = await ethProcessHelper.NativeCoinByCoinFamily(coin.coin_family);
+          const native_coin: any = await ethProcessHelper.checkIfContract('NativeCoin');
           console.log("789 adding_coins_to_queue ")
           await tronProcessHelper.adding_coins_to_queue(from_address, native_coin)
         }

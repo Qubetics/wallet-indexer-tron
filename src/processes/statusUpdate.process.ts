@@ -1,6 +1,7 @@
 import { config } from "../config/config";
 import { BooleanEnum, GlblBoolean, NotificationTypeEnum, TRONSTATUS, TokenStandard, TrnxBlockchainStatus, TrnxStatusEnum, TrnxTypeEnum } from "../enum";
 import { Utility_Helper, Blockchain_Helper, global_helper, node_issue_error_log_queries, trnx_history_queries, coin_queries, wallet_queries, kafkaHelper } from "../helpers";
+import { pending_trnx } from "../interface";
 import tronProcessHelper from "./processes.helper";
 import { Op } from "sequelize";
 class TronTxStatusUpdateProcess {
@@ -26,7 +27,7 @@ class TronTxStatusUpdateProcess {
     });
   };
 
-  public async getTx(data: { tx_id: string; coin_id: number }) {
+  public async getTx(data: pending_trnx) {
     try {
       console.log('Pending data >>>>>>>', data);
       let trnx_fee: number = GlblBoolean.false;
@@ -40,7 +41,12 @@ class TronTxStatusUpdateProcess {
           if (transaction.data.ret[GlblBoolean.false]) {
             const contractRet: string = transaction.data.ret[GlblBoolean.false].contractRet;
             let txData = {
-              coin_id: data.coin_id,
+              coin: {
+                coin_id: data.coin_id,
+                is_token: data.is_token,
+                token_type: data.token_type,
+                token_address: data.token_address,
+              },
               txid: transactionData.id,
               blockchain_status: TrnxBlockchainStatus.PENDING || null,
               coin_family: config.STATIC_COIN_FAMILY.TRX,
@@ -61,7 +67,12 @@ class TronTxStatusUpdateProcess {
             await tronTxStatusUpdateProcess.sendTxUpdate(txData);
           } else {
             let txData = {
-              coin_id: data.coin_id,
+              coin: {
+                coin_id: data.coin_id,
+                is_token: data.is_token,
+                token_type: data.token_type,
+                token_address: data.token_address,
+              },
               txid: transactionData.id,
               blockchain_status: TrnxBlockchainStatus.FAILED,
               coin_family: config.STATIC_COIN_FAMILY.TRX,
@@ -107,7 +118,12 @@ class TronTxStatusUpdateProcess {
     }
   };
   public sendTxUpdate = async (txData: {
-    coin_id: number;
+    coin: {
+      coin_id: number,
+      is_token: boolean,
+      token_type: string | null,
+      token_address: string
+    };
     txid: string;
     blockchain_status: string,
     coin_family: number,
@@ -116,9 +132,17 @@ class TronTxStatusUpdateProcess {
     status: string;
   }) => {
     try {
-      let coin_data: any = await tronProcessHelper.CoinByCoinId(txData.coin_id);
+      let coin_data: any = {};
+      if (!txData.coin?.is_token) {
+        console.log('in case of coin');
+        coin_data = await tronProcessHelper.checkIfContract('NativeCoin');
+      } else if (txData.coin?.token_type == TokenStandard.TRC20) {
+        coin_data = await tronProcessHelper.checkIfContract(txData.coin.token_address);
+      }
+
+      //let coin_data: any = await tronProcessHelper.CoinByCoinId(txData.coin_id);
       const trx_data = {
-        coin_id: txData?.coin_id,
+        coin_id: txData?.coin.coin_id,
         txid: txData?.txid,
         blockchain_status: txData?.blockchain_status,
         tx_fee: txData?.tx_fee,
@@ -127,7 +151,7 @@ class TronTxStatusUpdateProcess {
         gas_reverted: null,
         fromAddress: '',
         coin: {
-          coin_id: txData?.coin_id,
+          coin_id: txData?.coin.coin_id,
           is_token: coin_data.is_token,
           coin_symbol: coin_data.coin_symbol,
           coin_family: coin_data.coin_family,
@@ -157,18 +181,18 @@ class TronTxStatusUpdateProcess {
     )
     console.log("txnData>>", txnData)
     if (txnData) {
-      let from_address = txnData.from_adrs;
-      let amount = txnData.amount;
-      let user_id = txnData.user_id;
-      let tx_row_id = txnData.id;
-      let to_address = txnData.to_adrs;
-      let tx_type = txnData?.type
-      let coin_symbol = trx_data?.coin?.coin_symbol
-      let coin_family = txnData.coin_family;
-      let blockchain_status: any = trx_data.blockchain_status
+      const from_address = txnData.from_adrs;
+      const amount = txnData.amount;
+      const user_id = txnData.user_id;
+      const tx_row_id = txnData.id;
+      const to_address = txnData.to_adrs;
+      const tx_type = txnData?.type
+      const coin_symbol = trx_data?.coin?.coin_symbol
+      const coin_family = txnData.coin_family;
+      const blockchain_status: any = trx_data.blockchain_status
       console.log("txnData going to update>>", txnData.id, "blockchain_status", blockchain_status)
 
-      let txUpdateRes: any = await trnx_history_queries.trnx_history_update(
+      const txUpdateRes: any = await trnx_history_queries.trnx_history_update(
         { blockchain_status: blockchain_status, block_id: trx_data.block_number, tx_fee: trx_data.tx_fee, gas_reverted: trx_data.gas_reverted },
         { id: tx_row_id }
       )
@@ -178,13 +202,13 @@ class TronTxStatusUpdateProcess {
 
         if (blockchain_status == TrnxBlockchainStatus.CONFIRMED) {
 
-          let AddressWithdraw: any = await tronProcessHelper.check_our_wallet_address(from_address);
+          const AddressWithdraw: any = await tronProcessHelper.check_our_wallet_address(from_address);
 
           if (AddressWithdraw) {
             console.log('AddressWithdraw >>>>>>>>>>>>>', tx_type, AddressWithdraw);
             if (tx_type !== TrnxTypeEnum.DAPP) {
               console.log('tx_type >>>>>>>>>>>>>', tx_type);
-              const native_coin: any = await tronProcessHelper.NativeCoinByCoinFamily(coin_family);
+              const native_coin: any = await tronProcessHelper.checkIfContract('NativeCoin');
               console.log("789 adding_123coins_to_queusssse ", native_coin)
 
               await tronProcessHelper.adding_coins_to_queue(from_address, native_coin)
@@ -239,7 +263,7 @@ class TronTxStatusUpdateProcess {
             Utility_Helper.SendNotification(notifData);
           }
 
-          let Addressdeposit: any = await tronProcessHelper.check_our_wallet_address(to_address);
+          const Addressdeposit: any = await tronProcessHelper.check_our_wallet_address(to_address);
           if (Addressdeposit) {
             let to_user_id: number = Addressdeposit ? Addressdeposit.user_id : 0;
             let trnxTypeD: string = "Deposit";
@@ -253,7 +277,7 @@ class TronTxStatusUpdateProcess {
               amount
             )} ${trx_data?.coin?.coin_symbol.toUpperCase()} has been confirmed.`;
 
-            let notifData: any = {
+            const notifData: any = {
               title: trnxTypeD.toUpperCase(),
               message: notiMsg,
               amount: amount,
@@ -290,9 +314,9 @@ class TronTxStatusUpdateProcess {
               break;
           }
 
-          let notiMsg = trx_data?.coin.token_type === "TRC10" ? `Withdraw of NFT(${trx_data?.coin.coin_symbol.toUpperCase()}) with token id ${amount} has been confirmed.` : `${trnxTypeW} request of ${await Utility_Helper.bigNumberSafeConversion(amount)} ${trx_data?.coin.coin_symbol.toUpperCase()} has been failed.`;
+          const notiMsg = trx_data?.coin.token_type === "TRC10" ? `Withdraw of NFT(${trx_data?.coin.coin_symbol.toUpperCase()}) with token id ${amount} has been confirmed.` : `${trnxTypeW} request of ${await Utility_Helper.bigNumberSafeConversion(amount)} ${trx_data?.coin.coin_symbol.toUpperCase()} has been failed.`;
 
-          let notifData: any = {
+          const notifData: any = {
             title: trnxTypeW.toUpperCase(),
             message: notiMsg,
             amount: amount,
