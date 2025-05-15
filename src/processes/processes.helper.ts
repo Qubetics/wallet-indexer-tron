@@ -46,7 +46,7 @@ class TronProcessHelper {
       for await (let token of tokens) {
         let findTokenData = await this.getKeyValuePair(
           `${this.tron_token_type}`,
-          token.token_address.toUpperCase()
+          token.token_address == null ? 'NativeCoin'.toUpperCase() : token.token_address.toUpperCase(),
         );
         if (!findTokenData) {
           this.setKeyValuePair(
@@ -126,6 +126,7 @@ class TronProcessHelper {
       console.error('error in setKeyValuePair >>>', err);
     }
   }
+
   public async diffence_blocks_add_in_db(current_block: number, old_block: number) {
     try {
       let value_exist: any = await this.getKeyValuePair(this.all_processes, this.node_alert_tron)
@@ -165,6 +166,7 @@ class TronProcessHelper {
       return false;
     }
   }
+
   public async check_our_wallet_address(address: string) {
     try {
       let wallet_data: any = await this.getKeyValuePair(this.tron_wallet_address, address)
@@ -177,10 +179,10 @@ class TronProcessHelper {
 
   public checkIfContract = async (address: string) => {
     try {
-      let token_data: any = await this.getKeyValuePair(this.tron_token_type, address);
-      if (token_data) {
-        console.log("token_data>>>>>>>>", token_data)
-      }
+      const token_data: any = await this.getKeyValuePair(this.tron_token_type, address);
+      // if (token_data) {
+      //   console.log("token_data>>>>>>>>", token_data)
+      // }
       return JSON.parse(token_data);
     } catch (err: any) {
       console.error('check_our_wallet_address >>>>>', err);
