@@ -136,7 +136,7 @@ class TronTxStatusUpdateProcess {
       if (!txData.coin?.is_token) {
         console.log('in case of coin');
         coin_data = await tronProcessHelper.checkIfContract('NativeCoin');
-      } else if (txData.coin?.token_type == TokenStandard.TRC20) {
+      } else if (txData.coin?.token_type?.toLowerCase() == TokenStandard.TRC20) {
         coin_data = await tronProcessHelper.checkIfContract(txData.coin.token_address);
       }
 
