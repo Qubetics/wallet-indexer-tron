@@ -15,11 +15,11 @@ class TRONStartProcess {
       this.updateAllCoinsBalance()
    }
 
-   public testing_node() {
-      schedule.scheduleJob("*/2 * * * * *", async function () {
-         await TronProcessBlocks.testingNode();
-      });
-   }
+   // public testing_node() {
+   //    schedule.scheduleJob("*/2 * * * * *", async function () {
+   //       await TronProcessBlocks.testingNode();
+   //    });
+   // }
    public readBlocksProcess() {
       schedule.scheduleJob("*/3 * * * * *", async function () {
          await TronProcessBlocks.getBlocks();

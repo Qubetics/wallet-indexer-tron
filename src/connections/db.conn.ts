@@ -29,6 +29,13 @@ class Database implements DBInterface {
             idle: 20000,
             acquire: 60000,
          },
+         // pool: {
+         //    max: 50,          // or 20–100 based on expected traffic
+         //    min: 10,          // keep some idle connections ready
+         //    idle: 30000,      // 30s idle timeout
+         //    acquire: 60000,   // wait up to 60s for a free connection
+         //    evict: 10000,     // optional: check and close idle every 10s
+         // }
       });
 
       this.db_read = new Sequelize(this.connectionRead, {
