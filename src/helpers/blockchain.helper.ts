@@ -111,7 +111,9 @@ class BlockchainHelper {
       let bal_data: { status: boolean, balance: number } = { status: false, balance: 0 };
       try {
          await this.tronWeb.setAddress(contract_address);
-         let contract = await this.tronWeb.contract().at(contract_address);
+         // let contract = await this.tronWeb.contract().at(contract_address);
+         let contract: any = await this.tronWeb.contract(config.TRON_ABI, contract_address);
+
          let decimals = await contract.decimals().call();
          if (decimals._hex != undefined) {
             decimals = await this.tronWeb.toDecimal(decimals._hex);
