@@ -235,7 +235,7 @@ class TronTxStatusUpdateProcess {
                 trnxTypeW = "Swap";
                 break;
               case TrnxTypeEnum.CROSS_CHAIN:
-                trnxTypeW = "Cross chain Swap";
+                trnxTypeW = "Cross Chain Swap";
                 break;
               default:
                 break;
@@ -244,7 +244,7 @@ class TronTxStatusUpdateProcess {
               amount
             )} ${coin_symbol.toUpperCase()} has been confirmed.`;
 
-            let notifData: any = {
+            const notifData: any = {
               title: trnxTypeW.toUpperCase(),
               message: notiMsg,
               from_user_id: 0,

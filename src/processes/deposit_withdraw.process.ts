@@ -196,7 +196,7 @@ class TronDepositWithdrawProcess {
             trnxTypeW = "Swap";
             break;
           case TrnxTypeEnum.CROSS_CHAIN:
-            trnxTypeW = "Cross chain Swap";
+            trnxTypeW = "Cross Chain Swap";
             break;
           default:
             break;
