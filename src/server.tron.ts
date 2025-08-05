@@ -14,7 +14,7 @@ class TRONStartProcess {
       this.updateTxStatusProcess();
       this.updateBalance();
       this.updateAllCoinsBalance();
-      this.balanceUpdateByWallet();
+      // this.balanceUpdateByWallet();
    }
 
    // public testing_node() {
