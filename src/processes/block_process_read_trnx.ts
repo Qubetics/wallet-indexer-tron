@@ -156,7 +156,7 @@ class queue_transactions {
           }
         }
       } else {
-        console.log("FAILED", data.tx_id);
+        // console.log("FAILED", data.tx_id);
       }
     } catch (err: any) {
       console.error("Error in read_trnx>>>", err);

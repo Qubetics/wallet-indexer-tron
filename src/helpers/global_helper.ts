@@ -33,7 +33,7 @@ class Global_helper {
         try {
             switch (coin_data.coin_family) {
                 case CoinFamily.TRON:
-                    console.log("trx trx")
+                    // console.log("trx trx")
                     let tron_data: any = await Blockchain_Helper.TRX_Fetch_Balance(wallet_address, coin_data)
                     if (tron_data.status) {
                         return { status: true, balance: tron_data.balance }
