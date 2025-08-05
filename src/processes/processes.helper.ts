@@ -261,23 +261,23 @@ class TronProcessHelper {
     }
   }
 
-  public async adding_coins_to_queue(wallet_address: string, coin_details: any) {
+  public async addingCoinsToQueue(wallet_address: string, coin_details: any) {
     try {
       if (!wallet_address) {
         console.error(`wallet_address missing >>> `);
         return false;
       }
-      let wallet_data: any = await wallet_queries.wallet_find_one(
+      let walletData: any = await wallet_queries.wallet_find_one(
         ["coin_id", "user_id", "wallet_address"],
         { wallet_address: wallet_address, coin_id: coin_details.coin_id }
       )
 
-      if (!wallet_data) {
-        wallet_data = await tronProcessHelper.check_our_wallet_address(wallet_address)
-        if (wallet_data) {
-          let data_obj: any = {
-            user_id: wallet_data.user_id,
-            wallet_name: wallet_data.wallet_name,
+      if (!walletData) {
+        walletData = await tronProcessHelper.check_our_wallet_address(wallet_address)
+        if (walletData) {
+          const createdWalletData: any = {
+            user_id: walletData.user_id,
+            wallet_name: walletData.wallet_name,
             wallet_address: wallet_address,
             coin_id: coin_details.coin_id,
             coin_family: coin_details.coin_family,
@@ -285,7 +285,7 @@ class TronProcessHelper {
             default_wallet: 1,
             status: 1
           }
-          await wallet_queries.wallet_create(data_obj)
+          await wallet_queries.wallet_create(createdWalletData)
         } else {
           console.log("Not our wallet address", wallet_address)
         }
@@ -295,22 +295,22 @@ class TronProcessHelper {
         console.log("coin.added_by exist", coin_details.added_by)
         if (coin_details.added_by == 'user') {
           console.log("added by user")
-          let user_exist: any = await CustomTokennModel.findOne({
+          const userExist: any = await CustomTokennModel.findOne({
             attributes: ["id"],
-            where: { user_id: wallet_data.user_id, coin_id: coin_details.coin_id },
+            where: { user_id: walletData.user_id, coin_id: coin_details.coin_id },
             raw: true
           })
-          if (user_exist) {
+          if (userExist) {
             console.log("custom token already exist")
           } else {
             console.log("custom token not exist")
-            let currentUTCDate: string = new Date()
+            const currentUTCDate: string = new Date()
               .toISOString()
               .replace(/T/, " ")
               .replace(/\..+/, "");
             await CustomTokennModel.create({
               coin_id: coin_details.coin_id,
-              user_id: wallet_data.user_id,
+              user_id: walletData.user_id,
               created_at: currentUTCDate,
               updated_at: currentUTCDate
             })
@@ -320,36 +320,33 @@ class TronProcessHelper {
       } else {
         console.log("coin.added_by does not exist")
       }
-
-      console.log("Under adding_coins_to_queue>>>wallet_address>>", wallet_address, "coin_id>>>", coin_details.coin_id)
       if (wallet_address && coin_details.coin_id) {
         await kafkaHelper.produceMessage(this.trx_pending_balance_update_topic, { wallet_address: wallet_address, coin_data: coin_details, retry_count: 0 })
         return true;
       }
     } catch (err: any) {
-      console.error("Error in adding_coins_to_queue>>>", err)
+      console.error("Error in addingCoinsToQueue>>>", err)
       return false;
     }
   }
 
-  public async adding_address_to_queue(wallet_address: string, coin_family: CoinFamily) {
+  public async addingAddressToQueue(wallet_address: string, coin_family: CoinFamily) {
     try {
       if (!wallet_address) {
-        console.error(`wallet_address missing in adding_address_to_queue >>> `);
+        console.error(`wallet_address missing in addingAddressToQueue >>> `);
         return false;
       }
-      let wallet_data: any = await wallet_queries.wallet_find_one(
+      const walletData: any = await wallet_queries.wallet_find_one(
         ["user_id"],
         { wallet_address: wallet_address }
       )
-      console.log("Under adding_address_to_queue>>>user_id>>", wallet_data.user_id)
 
-      if (wallet_data) {
-        await kafkaHelper.produceMessage(this.update_user_all_coins_balance_topic, { user_id: wallet_data.user_id, coin_family })
+      if (walletData) {
+        await kafkaHelper.produceMessage(this.update_user_all_coins_balance_topic, { user_id: walletData.user_id, coin_family })
         return true;
       }
     } catch (err: any) {
-      console.error("Error in adding_address_to_queue>>>", err)
+      console.error("Error in addingAddressToQueue>>>", err)
       return false;
     }
   }

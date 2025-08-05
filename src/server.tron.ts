@@ -1,5 +1,6 @@
-import { TronProcessBlocks, tronDepositWithdrawProcess, ethPendingWithdrawalProcess, tronTxStatusUpdateProcess, tron_tx_status_deposit_withdraw } from "./processes"
+import { TronProcessBlocks, tronDepositWithdrawProcess, ethPendingWithdrawalProcess, tronTxStatusUpdateProcess, tron_tx_status_deposit_withdraw, updateBalanceProcess } from "./processes"
 import schedule from "node-schedule";
+
 
 class TRONStartProcess {
    constructor() {
@@ -12,7 +13,8 @@ class TRONStartProcess {
       this.getPendingWithdrawalTxProcess();
       this.updateTxStatusProcess();
       this.updateBalance();
-      this.updateAllCoinsBalance()
+      this.updateAllCoinsBalance();
+      this.balanceUpdateByWallet();
    }
 
    // public testing_node() {
@@ -58,13 +60,19 @@ class TRONStartProcess {
    }
    public updateBalance() {
       setTimeout(async () => {
-         await tronTxStatusUpdateProcess.startUpdateBalance()
+         await updateBalanceProcess.startUpdateBalance()
       }, 10000)
    }
    public updateAllCoinsBalance() {
       setTimeout(async () => {
-         await tronTxStatusUpdateProcess.startUpdateAllBalances()
+         await updateBalanceProcess.startUpdateAllBalances()
       }, 10000)
+   }
+
+   public async balanceUpdateByWallet() {
+      schedule.scheduleJob("*/1 * * * *", async function () {
+         await updateBalanceProcess.updateWalletBalance();
+      });
    }
 }
 

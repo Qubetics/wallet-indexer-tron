@@ -1,15 +1,11 @@
 import { config } from "../config/config";
-import { BooleanEnum, GlblBoolean, NotificationTypeEnum, TRONSTATUS, TokenStandard, TrnxBlockchainStatus, TrnxStatusEnum, TrnxTypeEnum } from "../enum";
-import { Utility_Helper, Blockchain_Helper, global_helper, node_issue_error_log_queries, trnx_history_queries, coin_queries, wallet_queries, kafkaHelper } from "../helpers";
+import { BooleanEnum, GlblBoolean, TRONSTATUS, TokenStandard, TrnxBlockchainStatus, TrnxStatusEnum, TrnxTypeEnum } from "../enum";
+import { Utility_Helper, Blockchain_Helper, node_issue_error_log_queries, trnx_history_queries, kafkaHelper } from "../helpers";
 import { pending_trnx } from "../interface";
 import tronProcessHelper from "./processes.helper";
 import { Op } from "sequelize";
 class TronTxStatusUpdateProcess {
   public tron_coin_family: any = config.STATIC_COIN_FAMILY.TRX;
-  public trx_pending_balance_update_topic: any = config.KAFKA_BALANCE.TRX_PENDING_BALANCE_UPDATE_TOPIC;
-  public trx_pending_balance_update_group: any = config.KAFKA_BALANCE.TRX_PENDING_BALANCE_UPDATE_GROUP_ID;
-  public update_user_all_coins_balance_topic: any = config.KAFKA_BALANCE.UPDATE_USER_ALL_TRX_COINS_BALANCE_TOPIC;
-  public update_user_all_coins_balance_group_id: any = config.KAFKA_BALANCE.UPDATE_USER_ALL_TRX_COINS_BALANCE_GROUP_ID;
   public trx_pending_withdrawal_tx_group_id = config.KAFKA_TRANSACTIONS.TRX_PENDING_WITHDRAWAL_TX_GROUP_ID;
   public trx_pending_withdrawal_tx_topic = config.KAFKA_TRANSACTIONS.TRX_PENDING_WITHDRAWAL_TX_TOPIC;
 
@@ -117,6 +113,7 @@ class TronTxStatusUpdateProcess {
       })
     }
   };
+
   public sendTxUpdate = async (txData: {
     coin: {
       coin_id: number,
@@ -166,6 +163,7 @@ class TronTxStatusUpdateProcess {
       return console.error(err.message);
     }
   };
+
   public async updateBroadcastTx(trx_data: any) {
     console.log("Entered into updateBroadcastTx>>>")
 
@@ -211,16 +209,16 @@ class TronTxStatusUpdateProcess {
               const native_coin: any = await tronProcessHelper.checkIfContract('NativeCoin');
               console.log("789 adding_123coins_to_queusssse ", native_coin)
 
-              await tronProcessHelper.adding_coins_to_queue(from_address, native_coin)
+              await tronProcessHelper.addingCoinsToQueue(from_address, native_coin)
 
               if (trx_data?.coin?.is_token === 1 && trx_data.coin?.token_type.toLowerCase() === TokenStandard.TRC20.toLowerCase()) {
                 console.log("123 adding_123coins_to_queue ", trx_data?.coin)
 
-                await tronProcessHelper.adding_coins_to_queue(from_address, trx_data?.coin)
+                await tronProcessHelper.addingCoinsToQueue(from_address, trx_data?.coin)
 
               }
             } else {
-              await tronProcessHelper.adding_address_to_queue(from_address, coin_family)
+              await tronProcessHelper.addingAddressToQueue(from_address, coin_family)
             }
 
             let trnxTypeW: string = "Withdraw";
@@ -269,8 +267,8 @@ class TronTxStatusUpdateProcess {
             let trnxTypeD: string = "Deposit";
 
             if (to_address !== from_address) {
-              console.log("ENtering adding_coins_to_queue ")
-              await tronProcessHelper.adding_coins_to_queue(to_address, trx_data.coin)
+              console.log("ENtering addingCoinsToQueue ")
+              await tronProcessHelper.addingCoinsToQueue(to_address, trx_data.coin)
             }
 
             const notiMsg = `${trnxTypeD} of ${await Utility_Helper.bigNumberSafeConversion(
@@ -342,116 +340,6 @@ class TronTxStatusUpdateProcess {
     } else {
       return false;
 
-    }
-  }
-  public startUpdateBalance = async () => {
-    let consumer = await kafkaHelper.kafka.consumer({ groupId: this.trx_pending_balance_update_group });
-    await consumer.subscribe({ topic: this.trx_pending_balance_update_topic, fromBeginning: true });
-    await consumer.run({
-      eachMessage: async ({ topic, partition, message }: { topic: any, partition: any, message: any }) => {
-        console.log("🚀 ~ startTxStatusUpdateQueue topic >>>>", topic);
-        console.log("🚀 ~ startTxStatusUpdateQueue message.value >>>>", message.value.toString());
-        await this.user_balance(JSON.parse(message.value.toString()))
-      }
-    }).catch((err: Error) => {
-      console.log("🔥 ~ ~ startTxStatusUpdateQueue error", err);
-    });
-  };
-  public async user_balance(data: any) {
-    try {
-      console.log("data in user_balance tron_update_balance_of_coin >>>>>>.", data)
-      if (data) {
-        console.log("entered into data in user_balance tron_update_balance_of_coin >>>>>>.", data)
-        console.log("entered in data in user_balance coin_data >>>>>>.", data.coin_data)
-        if (data.coin_data) {
-          const coin_data = data.coin_data;
-          console.log("entered in coin_data in user_balance coin_data >>>>>>.", coin_data.coin_id)
-
-          let bal_data: any = await global_helper.Fetch_Balance(coin_data, data.wallet_address)
-          if (bal_data.status) {
-            console.log("entered in coin_data coin_id>>>>>", coin_data.coin_id, "wallet_address>>>", data.wallet_address, "balance>>>", bal_data.balance)
-
-            await wallet_queries.wallet_update(
-              { balance: bal_data.balance, status: 1 },
-              { coin_id: coin_data.coin_id, wallet_address: data.wallet_address }
-            )
-            console.log("updated succssffullylyyyy")
-          } else {
-            console.log("not got balance data of this wallet addres, reason node error")
-            if (data.retry_count <= 5) {
-              let retry_count = data.retry_count + 1;
-              await kafkaHelper.produceMessage(this.trx_pending_balance_update_topic, { wallet_address: data.wallet_address, coin_data: data.coin_data, retry_count: retry_count })
-            }
-          }
-        } else {
-          console.log("data not present for this coin id.", data.coin_data)
-        }
-      } else {
-        console.log("No data present>>>")
-      }
-    } catch (err: any) {
-      console.error("Error in user_balance>>>", err)
-    }
-  }
-  public startUpdateAllBalances = async () => {
-    let consumer = await kafkaHelper.kafka.consumer({ groupId: this.update_user_all_coins_balance_group_id });
-    await consumer.subscribe({ topic: this.update_user_all_coins_balance_topic, fromBeginning: true });
-    await consumer.run({
-      eachMessage: async ({ topic, partition, message }: { topic: any, partition: any, message: any }) => {
-        console.log("🚀 ~ startTxStatusUpdateQueue topic >>>>", topic);
-        console.log("🚀 ~ startTxStatusUpdateQueue message.value >>>>", message.value.toString());
-        await this.user_all_balances(JSON.parse(message.value.toString()))
-      }
-    }).catch((err: Error) => {
-      console.log("🔥 ~ ~ startTxStatusUpdateQueue error", err);
-    });
-  };
-  public async user_all_balances(data: any) {
-    try {
-      console.log("data in user_all_balances user_all_balances >>>>>>.", data)
-      if (data) {
-
-        let all_coins: any = await wallet_queries.wallet_with_coins_joint(
-          ["wallet_address", "coin_id"],
-          { user_id: data.user_id, coin_family: data.coin_family },
-          ["coin_id", "coin_family", "token_type", "coin_symbol", "is_token", "token_address"],
-          [['wallet_id', 'ASC']]
-        )
-
-
-        if (all_coins) {
-          console.log("Data exist in all_coins>>")
-
-          for (let i: number = 0; i < all_coins.length; i++) {
-
-            if (all_coins[i].coin_data) {
-
-              let bal_data: any = await global_helper.Fetch_Balance(all_coins[i].coin_data, all_coins[i].wallet_address)
-              if (bal_data.status) {
-                console.log("coin_id>>>>>", all_coins[i].coin_data.coin_id, "wallet_address>>>", all_coins[i].wallet_address, "balance>>>", bal_data.balance)
-
-                await wallet_queries.wallet_update(
-                  { balance: bal_data.balance },
-                  { coin_id: all_coins[i].coin_data.coin_id, wallet_address: all_coins[i].wallet_address }
-                )
-                console.log("updated succssffullylyyyy")
-              } else {
-                console.log("not got balance data of this wallet addres, reason node error under user_all_balances")
-                await kafkaHelper.produceMessage(this.trx_pending_balance_update_topic, { wallet_address: data.wallet_address, coin_data: all_coins[i].coin_data, retry_count: 0 })
-              }
-            } else {
-              console.log("no coin data")
-            }
-          }
-
-        } else {
-          console.log("Data not exist in all_coins>>")
-        }
-      } else {
-        console.log("No data present>>>")
-      }
-    } catch (err: any) {
-      console.error("Error in user_all_balances>>>", err)
     }
   }
 

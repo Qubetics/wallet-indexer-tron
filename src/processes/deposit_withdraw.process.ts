@@ -158,9 +158,9 @@ class TronDepositWithdrawProcess {
       if (Addressdeposit) {
 
         let trnxTypeD: string = "Deposit";
-        console.log("123ENtering adding_coins_to_queue ")
+        console.log("123ENtering addingCoinsToQueue ")
 
-        await tronProcessHelper.adding_coins_to_queue(to_address, coin)
+        await tronProcessHelper.addingCoinsToQueue(to_address, coin)
         const notiMsg = `${trnxTypeD} of ${await Utility_Helper.bigNumberSafeConversion(
           amount
         )} ${coin.coin_symbol.toUpperCase()} has been confirmed.`;
@@ -204,8 +204,8 @@ class TronDepositWithdrawProcess {
 
         if (coin.is_token) {
           const native_coin: any = await ethProcessHelper.checkIfContract('NativeCoin');
-          console.log("789 adding_coins_to_queue ")
-          await tronProcessHelper.adding_coins_to_queue(from_address, native_coin)
+          console.log("789 addingCoinsToQueue ")
+          await tronProcessHelper.addingCoinsToQueue(from_address, native_coin)
         }
 
         const notiMsg = `${trnxTypeW} of ${await Utility_Helper.bigNumberSafeConversion(
