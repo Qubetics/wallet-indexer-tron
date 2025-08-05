@@ -338,7 +338,7 @@ class TronProcessHelper {
       }
       const walletData: any = await wallet_queries.wallet_find_one(
         ["user_id"],
-        { wallet_address: wallet_address }
+        { wallet_address: wallet_address, coin_family: coin_family, status: 1 }
       )
 
       if (walletData) {
