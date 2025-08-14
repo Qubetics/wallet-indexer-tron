@@ -23,7 +23,7 @@ class TRONStartProcess {
    //    });
    // }
    public readBlocksProcess() {
-      schedule.scheduleJob("*/1 * * * * *", async function () {
+      schedule.scheduleJob("*/2 * * * * *", async function () {
          await TronProcessBlocks.getBlocks();
       });
    }

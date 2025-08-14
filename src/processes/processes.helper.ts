@@ -74,7 +74,7 @@ class TronProcessHelper {
   }
   public async setBlocks(field: string, key: string, minBlockConfirmation: number, newBlock: number | null) {
     try {
-      let getBlockInfo: any = await Blockchain_Helper.tronWeb.trx.getCurrentBlock();
+      const getBlockInfo: any = await Blockchain_Helper.tronWeb.trx.getCurrentBlock();
 
       if (!getBlockInfo || !getBlockInfo.block_header || !getBlockInfo.block_header.raw_data) {
         console.error('Unable to fetch current block');
@@ -91,10 +91,11 @@ class TronProcessHelper {
         return;
       }
 
-      console.debug("getBlockInfo >>>>>>>>>>>", getBlockInfo.block_header.raw_data.number)
-      let currentBlock: number = getBlockInfo.block_header.raw_data.number;
+      console.debug("current block >>>>>>>>>>>", getBlockInfo.block_header.raw_data.number)
+      const currentBlock: number = getBlockInfo.block_header.raw_data.number;
 
-      let latestBlock: number = currentBlock - Number(minBlockConfirmation);
+      const latestBlock: number = currentBlock - Number(minBlockConfirmation);
+      console.log('set as end block', latestBlock);
 
       if (newBlock) {
         if (newBlock < latestBlock) {
