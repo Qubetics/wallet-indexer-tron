@@ -34,7 +34,7 @@ class TRONStartProcess {
       }, 10000);
    }
    public async readBehindBlocksProcess() {
-      schedule.scheduleJob("*/12 * * * * *", async function () {
+      schedule.scheduleJob("*/8 * * * * *", async function () {
          await TronProcessBlocks.readBehindBlock();
       })
    }

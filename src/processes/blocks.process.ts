@@ -124,7 +124,7 @@ class Process_Blocks {
         BLOCK_DIFFERENCE: toBlockNumber - blockNumber,
         TO_BLOCK_NUMBER: toBlockNumber,
       });
-      await this.getTxFromBlock(blockNumber, KEYS.latestBlock);
+      this.getTxFromBlock(blockNumber, KEYS.latestBlock);
     } catch (err: any) {
       console.error("Error in readBlocks:", (err as Error).message);
     }
