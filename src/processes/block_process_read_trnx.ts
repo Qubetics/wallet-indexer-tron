@@ -69,8 +69,8 @@ class queue_transactions {
           partition: any;
           message: any;
         }) => {
-          console.log("🚀 ~ startBehindBlockTxQueue topic", topic);
-          console.log("🚀 ~ startBehindBlockTxQueue message.value", message.value.toString());
+          // console.log("🚀 ~ startBehindBlockTxQueue topic", topic);
+          // console.log("🚀 ~ startBehindBlockTxQueue message.value", message.value.toString());
           this.read_trnx(JSON.parse(message.value.toString()));
         },
       })
