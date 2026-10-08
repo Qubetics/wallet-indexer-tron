@@ -27,19 +27,6 @@ class WalletQueries {
             throw err;
         }
     }
-    public async wallet_find_all(attr: any, where_clause: any, order: any) {
-        try {
-            let data: any = await this.wallet.findAll({
-                attributes: attr,
-                where: where_clause,
-                order: order
-            })
-            return data;
-        } catch (err: any) {
-            console.error("Error in wallet_find_all>>", err)
-            throw err;
-        }
-    }
     public async wallet_update(set: any, where_clause: any) {
         try {
             let data: any = await this.wallet.update(set, { where: where_clause })

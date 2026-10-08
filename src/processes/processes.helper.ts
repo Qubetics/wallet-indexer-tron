@@ -352,16 +352,6 @@ class TronProcessHelper {
     }
   }
 
-  public async getHashTable(keyName: string) {
-    try {
-      const getAsync = promisify(redisClient.hvals).bind(redisClient);
-      const value = await getAsync(keyName);
-      return value;
-    } catch (err: any) {
-      console.error(`💥 ~ getHashTable error`, err);
-      return null;
-    }
-  }
 
   public async deleteKeyValuePair(keyName: string, field: string) {
     try {
@@ -393,36 +383,6 @@ class TronProcessHelper {
     }
   };
 
-  public async get_coin_id(txId: string): Promise<{
-    is_token: any | null;
-    token_address: string | null;
-    trnx_info: any | null;
-  }> {
-    try {
-      const trnxInfo = await Blockchain_Helper.tronWeb.trx.getTransactionInfo(txId);
-
-      const logs = trnxInfo?.log?.[0];
-      if (!logs || !logs.address) {
-        return { is_token: null, token_address: null, trnx_info: null };
-      }
-
-      const tokenAddress = Blockchain_Helper.tronWeb.address.fromHex('41' + logs.address);
-      const isToken = await Blockchain_Helper.Trc20_Token(tokenAddress);
-
-      if (isToken) {
-        return {
-          is_token: isToken,
-          token_address: tokenAddress,
-          trnx_info: trnxInfo
-        };
-      }
-
-      return { is_token: null, token_address: null, trnx_info: null };
-    } catch (err) {
-      console.error('Error in getCoinId:', err);
-      return { is_token: null, token_address: null, trnx_info: null };
-    }
-  }
 
 
 }

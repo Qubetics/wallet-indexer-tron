@@ -67,14 +67,6 @@ class BlockchainHelper {
       const tokenStandard: TokenStandard = TokenStandard.TRC20;
       return await tronProcessHelper.checkIfContract(address)
    };
-   public async hexToAscii(data: string) {
-      var hex = data.toString();
-      var str = "";
-      for (var n = 0; n < hex.length; n += 2) {
-         str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
-      }
-      return str;
-   }
    /** fetch balance */
    public async TRX_Fetch_Balance(address: string, coin: any) {
       let bal_data: { status: boolean, balance: number } = { status: false, balance: 0 };

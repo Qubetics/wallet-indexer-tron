@@ -69,11 +69,6 @@ class TRONStartProcess {
       }, 10000)
    }
 
-   public async balanceUpdateByWallet() {
-      schedule.scheduleJob("*/1 * * * *", async function () {
-         await updateBalanceProcess.updateWalletBalance();
-      });
-   }
 }
 
 new TRONStartProcess();

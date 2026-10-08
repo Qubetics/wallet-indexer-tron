@@ -26,19 +26,6 @@ class TrnxHistoryQueries {
             throw err;
         }
     }
-    public async trnx_history_find_all(attr: any, where_clause: any) {
-        try {
-            let data: any = await this.trnx_history.findAll({
-                attributes: attr,
-                where: where_clause,
-                raw: true
-            })
-            return data;
-        } catch (err: any) {
-            console.error("Error in trnx_history_find_all>>", err)
-            throw err;
-        }
-    }
     public async trnx_history_update(set: any, where_clause: any) {
         try {
             let data: any = await this.trnx_history.update( set , { where: where_clause })

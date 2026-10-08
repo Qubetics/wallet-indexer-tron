@@ -259,24 +259,5 @@ class Process_Blocks {
       console.error("Error in readSpecificBlock>>>", err);
     }
   }
-  public async testingNode() {
-    try {
-      // Get Block Number
-      const getBlockInfo: any =
-        await Blockchain_Helper.tronWeb.trx.getCurrentBlock();
-      console.debug(
-        "getBlockInfo >>>>>>>>>>>",
-        getBlockInfo.block_header.raw_data.number
-      );
-
-      // Get Block Info
-      const getBlock = await Blockchain_Helper.tronWeb.trx.getBlock(
-        getBlockInfo.block_header.raw_data.number
-      );
-      const blockInfo: any = getBlock.transactions;
-    } catch (err: any) {
-      console.error("Error in testingNode>>", err);
-    }
-  }
 }
 export let TronProcessBlocks = new Process_Blocks();
