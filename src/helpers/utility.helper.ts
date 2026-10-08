@@ -3,14 +3,14 @@ import { device_token_queries } from "./index";
 import * as Models from "../models/model/index";
 import { Op } from "sequelize";
 import firebaseAdmin from 'firebase-admin';
-import { fcmServiceAccount } from "../constant/firebase.admin.key";
+import { config } from "../config";
 
 class UtilityHelper {
   public messaging: firebaseAdmin.messaging.Messaging;
   constructor() {
     (async () => {
       firebaseAdmin.initializeApp({
-        credential: firebaseAdmin.credential.cert(fcmServiceAccount),
+        credential: firebaseAdmin.credential.cert(config.FIREBASE_SERVICE_ACCOUNT),
       });
       this.messaging = firebaseAdmin.messaging();
     })();

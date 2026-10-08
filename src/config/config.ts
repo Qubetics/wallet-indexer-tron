@@ -15,6 +15,7 @@ export const config = {
    TOKEN_TYPE_TRON: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.TOKEN_TYPE_TRON}`,
    TOKEN_TYPE10_TRON: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.TOKEN_TYPE10_TRON}`,
    STATIC_COIN_FAMILY: zookeeperConfig.config.STATIC_COIN_FAMILY,
+   FIREBASE_SERVICE_ACCOUNT: zookeeperConfig.config.FIREBASE_SERVICE_ACCOUNT,
    REDISKEYS: {
       TRON_BLOCKS: `${name}_${zookeeperConfig.config.SERVER}_${zookeeperConfig.config.TRON_BLOCKS} `,
       OLD_BLOCK_TRON: zookeeperConfig.config.OLD_BLOCK_TRON,
