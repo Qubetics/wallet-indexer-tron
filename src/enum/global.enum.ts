@@ -61,8 +61,6 @@ export enum TokenManagedByEnum {
 export enum TxReqTypesEnum {
     APP = 'APP',
     EXNG = 'EXNG',
-    TRANSAK = 'TRANSAK',
-    ALCHEMY = 'ALCHEMY',
     NOTPRESET = 'NOT_PRESENT'
 }
 export enum TokenStandard {
