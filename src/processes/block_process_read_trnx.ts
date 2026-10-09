@@ -69,8 +69,6 @@ class queue_transactions {
           partition: any;
           message: any;
         }) => {
-          // console.log("🚀 ~ startBehindBlockTxQueue topic", topic);
-          // console.log("🚀 ~ startBehindBlockTxQueue message.value", message.value.toString());
           this.read_trnx(JSON.parse(message.value.toString()));
         },
       })
@@ -156,7 +154,6 @@ class queue_transactions {
           }
         }
       } else {
-        // console.log("FAILED", data.tx_id);
       }
     } catch (err: any) {
       console.error("Error in read_trnx>>>", err);

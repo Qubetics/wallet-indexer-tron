@@ -23,8 +23,6 @@ class TronProcessHelper {
   public trx_pending_balance_update_topic: any = config.KAFKA_BALANCE.TRX_PENDING_BALANCE_UPDATE_TOPIC;
 
 
-
-
   constructor() {
     this.fetchTRC20Tokens();
     this.fetchWalletAddress();
@@ -56,7 +54,6 @@ class TronProcessHelper {
           );
         }
       }
-      // redisClient.set(this.tron_token_type || "", JSON.stringify(tokens));
     } catch (err: any) {
       console.error('error in fetchTRC20Tokens >>>>>', err.message);
     }
@@ -181,60 +178,13 @@ class TronProcessHelper {
   public checkIfContract = async (address: string) => {
     try {
       const token_data: any = await this.getKeyValuePair(this.tron_token_type, address);
-      // if (token_data) {
-      //   console.log("token_data>>>>>>>>", token_data)
-      // }
       return JSON.parse(token_data);
     } catch (err: any) {
       console.error('check_our_wallet_address >>>>>', err);
       return null;
     }
   };
-  // public checkIfContract = async (address: string) => {
-  //   try {
-  //     const getAsync = promisify(redisClient.get).bind(redisClient);
-  //     const value = await getAsync(this.tron_token_type || "");
-  //     const erc20Tokens: any = value ? JSON.parse(value) : [];
-  //     const token = erc20Tokens.find(
-  //       (el: any) => Number(el.is_token) === Number(BooleanEnum.true) && el.token_address.toUpperCase() === address.toUpperCase()
-  //     );
-  //     if (token) return token;
-  //     return null;
-  //   } catch (err: any) {
-  //     console.error('error in checkIfContract >>>>', err);
-  //     return null;
-  //   }
-  // }
-  // public async NativeCoinByCoinFamily(coin_family: CoinFamily) {
-  //   try {
-  //     const getAsync = promisify(redisClient.get).bind(redisClient);
-  //     const value = await getAsync(this.tron_token_type || "");
-  //     const trc20Tokens: any = value ? JSON.parse(value) : [];
-  //     return trc20Tokens.find(
-  //       (el: any) => Number(el.is_token) === Number(BooleanEnum.false) && el.coin_family === coin_family
-  //     );
-  //   } catch (error: any) {
-  //     console.error(`error in NativeCoinByCoinFamily >>>`, error);
-  //     return null;
-  //   }
-  // }
-  // public CoinByCoinId = async (
-  //   coin_id: number
-  // ) => {
-  //   try {
-  //     const getAsync = promisify(redisClient.get).bind(redisClient);
-  //     const value = await getAsync(this.tron_token_type || "");
 
-  //     const erc20Tokens: any = value ? JSON.parse(value) : [];
-  //     return erc20Tokens.find(
-  //       (el: any) => el.coin_id === coin_id
-  //     );
-
-  //   } catch (error: any) {
-  //     console.error(`error in CoinByCoinId >>>`, error);
-  //     return null;
-  //   }
-  // }
 
   public behindBlocks = async () => {
     try {
@@ -382,7 +332,6 @@ class TronProcessHelper {
       console.log('fetchWalletAddress >>>');
     }
   };
-
 
 
 }

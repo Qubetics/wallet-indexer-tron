@@ -6,7 +6,6 @@ import { CoinsModel, WalletModel } from "../models/model";
 import tronProcessHelper from "./processes.helper";
 
 
-
 class UpdateBalanceController {
 
     public trx_pending_balance_update_topic: any = config.KAFKA_BALANCE.TRX_PENDING_BALANCE_UPDATE_TOPIC;
@@ -19,8 +18,6 @@ class UpdateBalanceController {
         await consumer.subscribe({ topic: this.trx_pending_balance_update_topic, fromBeginning: true });
         await consumer.run({
             eachMessage: async ({ topic, partition, message }: { topic: any, partition: any, message: any }) => {
-                // console.log("🚀 ~ startTxStatusUpdateQueue topic >>>>", topic);
-                // console.log("🚀 ~ startTxStatusUpdateQueue message.value >>>>", message.value.toString());
                 await this.userBalance(JSON.parse(message.value.toString()))
             }
         }).catch((err: Error) => {
@@ -47,7 +44,6 @@ class UpdateBalanceController {
                                 { coin_id: coinData.coin_id, wallet_address: data.wallet_address }
                             )
                         } else {
-                            //console.log("balance unchanged >>>>>>.", data.wallet_address, 'balance', balData.balance)
                         }
                     } else {
                         console.log("not got balance data of this wallet addres, reason node error")
@@ -72,8 +68,6 @@ class UpdateBalanceController {
         await consumer.subscribe({ topic: this.update_user_all_coins_balance_topic, fromBeginning: true });
         await consumer.run({
             eachMessage: async ({ topic, partition, message }: { topic: any, partition: any, message: any }) => {
-                // console.log("🚀 ~ startTxStatusUpdateQueue topic >>>>", topic);
-                // console.log("🚀 ~ startTxStatusUpdateQueue message.value >>>>", message.value.toString());
                 await this.userAllBalances(JSON.parse(message.value.toString()))
             }
         }).catch((err: Error) => {
@@ -182,7 +176,6 @@ class UpdateBalanceController {
             console.error("Error in updateWalletBalanceByWallet", err)
         }
     };
-
 
 
 }

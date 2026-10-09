@@ -4,7 +4,6 @@ import schedule from "node-schedule";
 
 class TRONStartProcess {
    constructor() {
-      // this.testing_node();
       this.readBlocksProcess();
       this.consume_read_block_queue();
       this.readBehindBlocksProcess();
@@ -14,14 +13,8 @@ class TRONStartProcess {
       this.updateTxStatusProcess();
       this.updateBalance();
       this.updateAllCoinsBalance();
-      // this.balanceUpdateByWallet();
    }
 
-   // public testing_node() {
-   //    schedule.scheduleJob("*/2 * * * * *", async function () {
-   //       await TronProcessBlocks.testingNode();
-   //    });
-   // }
    public readBlocksProcess() {
       schedule.scheduleJob("*/2 * * * * *", async function () {
          await TronProcessBlocks.getBlocks();

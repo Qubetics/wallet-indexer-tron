@@ -22,18 +22,7 @@ class ETHPendingWithdrawalProcess {
         req_type: { [Op.notIn]: ['TRANSAK', 'ALCHEMY', 'MERCURYO'] },
         coin_family: config.STATIC_COIN_FAMILY.TRX
       },
-      // raw: true
     })
-    // let tx: any = await trnx_history_queries.trnx_history_find_all(
-    //   ["tx_id", "coin_id"],
-    //   {
-    //     status: 'completed',
-    //     [Op.or]: [{ blockchain_status: null }, { blockchain_status: TrnxBlockchainStatus.PENDING }],
-    //     req_type: { [Op.notIn]: ['TRANSAK', 'ALCHEMY', 'MERCURYO'] },
-    //     coin_family: config.STATIC_COIN_FAMILY.TRX,
-    //     tx_id: { [Op.not]: null }
-    //   },
-    // )
     if (tx.length > 0) {
       await Promise.all(tx.map(async (el: any) => {
         const trnx: pending_trnx = {
@@ -46,12 +35,6 @@ class ETHPendingWithdrawalProcess {
         return this.addTxToQueue(trnx); // Directly return the promise
       }));
     }
-    // if (tx.length > 0) {
-    //   for await (const el of tx) {
-    //     console.log("el>>>", el)
-    //     await this.addTxToQueue(el);
-    //   }
-    // }
   };
 
   public addTxToQueue = async (data: { tx_id: string; coin_id: number }) => {

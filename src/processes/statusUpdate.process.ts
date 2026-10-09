@@ -137,7 +137,6 @@ class TronTxStatusUpdateProcess {
         coin_data = await tronProcessHelper.checkIfContract(txData.coin.token_address);
       }
 
-      //let coin_data: any = await tronProcessHelper.CoinByCoinId(txData.coin_id);
       const trx_data = {
         coin_id: txData?.coin.coin_id,
         txid: txData?.txid,
