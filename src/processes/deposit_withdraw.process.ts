@@ -147,11 +147,6 @@ class TronDepositWithdrawProcess {
         fiat_type: fiat_currency
       }
       const newTrnx: any = await trnx_history_queries.trnx_history_create(trx_data)
-      let coinFmlyTag: string = "";
-
-      if (coin.is_token == Number(BooleanEnum.true)) {
-        coinFmlyTag = `(${coin.token_type.toUpperCase()})`;
-      }
 
       if (Addressdeposit) {
 
