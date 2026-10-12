@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import { config } from "../config/config";
 import { TrnxBlockchainStatus } from "../enum";
-import { kafkaHelper, trnx_history_queries } from "../helpers";
+import { kafkaHelper } from "../helpers";
 import { CoinsModel, TrnxHistoryModel } from "../models/model";
 import { pending_trnx } from "../interface";
 

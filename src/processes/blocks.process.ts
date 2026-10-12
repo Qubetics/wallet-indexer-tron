@@ -4,7 +4,7 @@ import {
   Blockchain_Helper,
   node_issue_error_log_queries,
 } from "../helpers/index";
-import { blocks_trnx, transaction_data } from "../interface/index";
+import { transaction_data } from "../interface/index";
 import { TronOldBLockModel } from "../models/model";
 import tronProcessHelper from "./processes.helper";
 import { KEYS } from "../enum/index";

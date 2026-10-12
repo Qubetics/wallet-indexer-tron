@@ -64,7 +64,6 @@ class BlockchainHelper {
 
    /* TRON CASE */
    public async Trc20_Token(address: string) {
-      const tokenStandard: TokenStandard = TokenStandard.TRC20;
       return await tronProcessHelper.checkIfContract(address)
    };
    /** fetch balance */

@@ -1,6 +1,6 @@
 import { config } from "../config/config";
 import ethProcessHelper from './processes.helper';
-import { BooleanEnum, CoinFamily, TrnxTypeEnum, TxReqTypesEnum } from ".././enum";
+import { BooleanEnum, TrnxTypeEnum, TxReqTypesEnum } from ".././enum";
 import { Utility_Helper, kafkaHelper, trnx_history_queries, wallet_queries } from "../helpers"
 import { Op } from "sequelize";
 import tronProcessHelper from "./processes.helper";

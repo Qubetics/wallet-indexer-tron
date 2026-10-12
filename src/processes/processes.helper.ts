@@ -4,8 +4,8 @@ import redisClient from "../connections/redis.conn";
 import { promisify } from "util";
 import { config } from "../config/config";
 import database from "../connections/db.conn";
-import { BooleanEnum, CoinFamily } from "../enum";
-import { Blockchain_Helper, coin_queries, global_helper, kafkaHelper, node_issue_error_log_queries, wallet_queries } from '../helpers';
+import { CoinFamily } from "../enum";
+import { Blockchain_Helper, global_helper, kafkaHelper, node_issue_error_log_queries, wallet_queries } from '../helpers';
 import CustomTokennModel from "../models/model/model.custom_tokens";
 
 class TronProcessHelper {

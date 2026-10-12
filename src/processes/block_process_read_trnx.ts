@@ -6,7 +6,7 @@ import {
   kafkaHelper,
   node_issue_error_log_queries,
 } from "../helpers";
-import { blocks_trnx, transaction_data, Transaction } from "../interface/index";
+import { transaction_data, Transaction } from "../interface/index";
 import tronProcessHelper from "./processes.helper";
 
 class queue_transactions {
