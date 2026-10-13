@@ -4,7 +4,6 @@ import { global_helper } from './global_helper';
 import node_issue_error_log_queries from "./dbhelper/node_issue_error_logs"
 import trnx_history_queries from './dbhelper/trnx_history';
 import wallet_queries from './dbhelper/wallets';
-import coin_queries from './dbhelper/coins';
 import device_token_queries from "./dbhelper/device_tokens";
 import kafkaHelper from "./kafka.helper";
 
@@ -15,7 +14,6 @@ export {
     node_issue_error_log_queries,
     trnx_history_queries,
     wallet_queries,
-    coin_queries,
     device_token_queries,
     kafkaHelper
 }

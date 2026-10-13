@@ -20,21 +20,6 @@ export enum NotificationTypeEnum {
     REWARD = 'reward',
     PRICE_ALERT = 'price_alert'
 }
-export enum StatusEnum {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
-    DELETED = 'deleted',
-    ENABLED = 'enabled',
-    DISABLED = 'disabled',
-    PENDING = 'pending',
-    COMPLETE = 'completed',
-    FAILED = 'failed',
-    CONFIRMED = 'confirmed',
-    INITIALIZE = 'initialize',
-    BURN = 'burn',
-    RELEASE = 'release',
-    REVERT = 'revert'
-}
 export enum GlblBoolean {
     true = 1,
     false = 0
@@ -82,10 +67,6 @@ export enum CoinStatus {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
     DELETED = 'deleted'
-}
-export enum CoinStatusEnum {
-    ACTIVE = 1,
-    INACTIVE = 0
 }
 export enum CoinFamily {
     NONE = 0,
