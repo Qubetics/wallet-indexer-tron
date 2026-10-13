@@ -7,18 +7,6 @@ export enum KEYS {
 export enum Tron_contract_status {
     TransferContract = 'TransferContract',
     TriggerSmartContract = 'TriggerSmartContract',
-    TransferAssetContract = 'TransferAssetContract'
-}
-export enum NotificationTypeEnum {
-    ADMIN = "6",
-    NONE = 'none',
-    INTERNAL = 'internal',
-    DEPOSIT = 'deposit',
-    WITHDRAW = 'withdraw',
-    SMARTCONTRACTINTERACTION = 'smartcontractinteraction',
-    SWAP = 'swap',
-    REWARD = 'reward',
-    PRICE_ALERT = 'price_alert'
 }
 export enum GlblBoolean {
     true = 1,
@@ -30,23 +18,15 @@ export enum TrnxBlockchainStatus {
     CONFIRMED = 'confirmed',
 }
 export enum TrnxStatusEnum {
-    PENDING = 'pending',
     COMPLETED = 'completed',
-    FAILED = 'failed',
 }
 export enum TRONSTATUS {
     SUCCESS = 'SUCCESS',
     REVERT = 'REVERT',
     OUT_OF_ENERGY = 'OUT_OF_ENERGY'
 }
-export enum TokenManagedByEnum {
-    ADMIN = 'admin',
-    USERS = 'users'
-}
 export enum TxReqTypesEnum {
-    APP = 'APP',
     EXNG = 'EXNG',
-    NOTPRESET = 'NOT_PRESENT'
 }
 export enum TokenStandard {
     NONE = 'null',
@@ -62,11 +42,6 @@ export enum TokenStandard {
 export enum BooleanEnum {
     false = '0',
     true = '1'
-}
-export enum CoinStatus {
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
-    DELETED = 'deleted'
 }
 export enum CoinFamily {
     NONE = 0,
