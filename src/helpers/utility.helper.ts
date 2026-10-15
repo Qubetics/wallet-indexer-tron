@@ -2,17 +2,18 @@ import BigNumber from "bignumber.js";
 import { device_token_queries } from "./index";
 import * as Models from "../models/model/index";
 import { Op } from "sequelize";
-import firebaseAdmin from 'firebase-admin';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getMessaging, Messaging } from 'firebase-admin/messaging';
 import { config } from "../config";
 
 class UtilityHelper {
-  public messaging: firebaseAdmin.messaging.Messaging;
+  public messaging!: Messaging;
   constructor() {
     (async () => {
-      firebaseAdmin.initializeApp({
-        credential: firebaseAdmin.credential.cert(config.FIREBASE_SERVICE_ACCOUNT),
+      initializeApp({
+        credential: cert(config.FIREBASE_SERVICE_ACCOUNT),
       });
-      this.messaging = firebaseAdmin.messaging();
+      this.messaging = getMessaging();
     })();
   }
   public async bigNumberSafeMath(c: any, operation: any, d: any) {
