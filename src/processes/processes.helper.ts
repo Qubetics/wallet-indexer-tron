@@ -1,7 +1,6 @@
 import Sequelize, { Op } from "sequelize";
 import * as Models from '../models/model/index'
 import redisClient from "../connections/redis.conn";
-import { promisify } from "util";
 import { config } from "../config/config";
 import database from "../connections/db.conn";
 import { CoinFamily } from "../enum";
@@ -61,8 +60,7 @@ class TronProcessHelper {
 
   public async getKeyValuePair(keyName: string, field: string) {
     try {
-      let getAsync = promisify(redisClient.HGET).bind(redisClient);
-      let value = await getAsync(keyName, field.toUpperCase() || "");
+      let value = await redisClient.hGet(keyName, field.toUpperCase() || "");
       return value;
     } catch (err: any) {
       console.error('error in getKeyValuePair >>>', err);
@@ -119,7 +117,7 @@ class TronProcessHelper {
   }
   public async setKeyValuePair(keyName: string, field: string, value: string) {
     try {
-      redisClient.hset(keyName, field.toUpperCase(), value);
+      await redisClient.hSet(keyName, field.toUpperCase(), value);
     } catch (err: any) {
       console.error('error in setKeyValuePair >>>', err);
     }
@@ -305,12 +303,7 @@ class TronProcessHelper {
 
   public async deleteKeyValuePair(keyName: string, field: string) {
     try {
-      redisClient.hdel(keyName, field.toUpperCase(), function (err) {
-        if (err) {
-          throw err;
-        }
-        return true;
-      })
+      await redisClient.hDel(keyName, field.toUpperCase());
 
     } catch (err: any) {
       console.error("Error in deleteKeyValuePair>>", err)
