@@ -1,4 +1,4 @@
-import TronWeb from 'tronweb';
+import { TronWeb } from 'tronweb';
 import { TokenStandard } from "../enum";
 import { Utility_Helper } from "./utility.helper";
 import { config } from '../config/config';
@@ -28,7 +28,8 @@ class BlockchainHelper {
             return { status: true, data: result };
          }).catch(async (err: any) => {
             console.error("Error in getConfirmedTransaction catch:", err?.message);
-            if (err == "Transaction not found") {
+            // tronweb 4 rejected with the string "Transaction not found", tronweb 6 rejects with an Error carrying that message
+            if ((err?.message ?? err) == "Transaction not found") {
                console.log("Transaction not fount for tx_id>>", tx_hash, "block number>>>", block_number)
             } else {
                console.log("Error in GetConfirmedTransaction tx_id", tx_hash)
@@ -104,13 +105,20 @@ class BlockchainHelper {
          await this.tronWeb.setAddress(contract_address);
          let contract: any = await this.tronWeb.contract(config.TRON_ABI, contract_address);
 
+         // tronweb 6 returns uint values as bigint (tronweb 4 returned BigNumber objects with _hex)
          let decimals = await contract.decimals().call();
-         if (decimals._hex != undefined) {
+         if (typeof decimals === 'bigint') {
+            decimals = Number(decimals);
+         } else if (decimals._hex != undefined) {
             decimals = await this.tronWeb.toDecimal(decimals._hex);
          }
          let balanceOf = await contract.balanceOf(address).call();
-         let toDecimal = await this.tronWeb.toDecimal(balanceOf._hex);
-         if (balanceOf._hex == undefined) {
+         let toDecimal: any;
+         if (typeof balanceOf === 'bigint') {
+            toDecimal = balanceOf.toString();
+         } else if (balanceOf._hex != undefined) {
+            toDecimal = await this.tronWeb.toDecimal(balanceOf._hex);
+         } else {
             toDecimal = await this.tronWeb.toDecimal(
                balanceOf.balance._hex
             );
