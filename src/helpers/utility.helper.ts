@@ -6,6 +6,16 @@ import { initializeApp, cert } from 'firebase-admin/app';
 import { getMessaging, Messaging } from 'firebase-admin/messaging';
 import { config } from "../config";
 
+
+// bignumber.js 10+ throws on input it cannot parse where 9 returned NaN; keep returning NaN so callers behave as before.
+const toBigNumber = (value: any): BigNumber => {
+  try {
+    return new BigNumber(value);
+  } catch {
+    return new BigNumber(NaN);
+  }
+};
+
 class UtilityHelper {
   public messaging!: Messaging;
   constructor() {
@@ -18,8 +28,8 @@ class UtilityHelper {
   }
   public async bigNumberSafeMath(c: any, operation: any, d: any) {
     18;
-    var a = new BigNumber(c);
-    var b = new BigNumber(d);
+    var a = toBigNumber(c);
+    var b = toBigNumber(d);
     var rtn: any;
     switch (operation.toLowerCase()) {
       case "-":
@@ -43,7 +53,7 @@ class UtilityHelper {
   }
   public async bigNumberSafeConversion(val: number) {
     const amount = val.toString();
-    const value = new BigNumber(amount);
+    const value = toBigNumber(amount);
     return value.toFixed();
   }
   public async exponentialToDecimal(exponential: number) {
